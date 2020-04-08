@@ -20,3 +20,4 @@ export interface UsuarioRe {
   tipo_usuario: number;
   token: string;
 }
+

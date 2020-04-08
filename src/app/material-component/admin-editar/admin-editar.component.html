@@ -14,7 +14,10 @@
           <strong class="text-danger">*</strong>
           Usuario:
         </label>
-        <input type="text" name="usuario" requered enable class="form-control" value="{{usuario}}"/>
+        <input type="text" name="usuario" requered enable class="form-control" [(ngModel)]="usuario" value="{{usuario}}"/>
+        <label class="control-label col-sm-12 col-lg-12 col-xl-12" style="background: #d20007" *ngIf="usuarioValidacion == false">
+          Ingresa un usuario valido
+        </label>
       </div>
 <!---------------------------------------------Contraseña-------------------------------------------------------------->
       <div class="col-lg-12" style="margin-top:2%;">
@@ -22,7 +25,7 @@
           <strong class="text-danger">*</strong>
           Contraseña:
         </label>
-        <input type="password" name="contrasena" class="form-control" requered value="{{contrasenia}}" />
+        <input type="password" name="contrasena" class="form-control" requered [(ngModel)]="contrasenia" />
       </div>
  <!------------------------------------------------Estaus--------------------------------------------------------------->
       <div class="col-lg-12" style="margin-top:2%;">
@@ -30,7 +33,7 @@
           <strong class="text-danger">*</strong>
           Estatus:
         </label>
-        <input type="text" name="password" class="form-control" required value="{{estatus}}" />
+        <input type="text" name="password" class="form-control" required [(ngModel)]="estatus" />
       </div>
  <!------------------------------------------------Tipo Usuario--------------------------------------------------------->
       <div class="col-lg-12" style="margin-top:2%;">
@@ -39,7 +42,7 @@
           Tipo Usuario:
         </label>
         <!--                    <input type="text" name="tipo_usuario" class="form-control" required/>-->
-        <select style="height: 45px" name="tipo_usuario" class="form-control"  required>
+        <select style="height: 45px" name="tipo_usuario" class="form-control" [(ngModel)]="tipo" >
           <option value="{{tipo}}" selected> {{tipoUsu}}</option>
           <option value="1"> Super Usuario </option>
           <option value="2"> Operador </option>
@@ -53,7 +56,7 @@
           &nbsp;
           <br>
         </label>
-        <button class="btn btn-success btn-lg" type="submit"><a href="#" style="color: #FFFFFF">Guardar</a></button>
+        <button class="btn btn-success btn-lg" type="submit" (click)="actualizarUsuario()"><a href="#" style="color: #FFFFFF">Guardar</a></button>
       </div>
  <!-------------------------------------------------Boton Cancelar------------------------------------------------------>
       <div class="col-lg-12" style="margin-top:2%;">

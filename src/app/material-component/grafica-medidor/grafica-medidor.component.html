@@ -5,7 +5,7 @@
 <div mat-dialog-title  class="flex-container">
   <div class="flex-item">
     <div style="display: block" mat-dialog-actions>
-      <h6 style="color: white">N° de Serie:</h6>
+      <h6 style="color: white">N° de Serie: {{macMed2}}</h6>
       <h6 style="color: white">Estado del relevador:</h6>
       <h6 style="color: white">Neteo Energía:</h6>
 
@@ -20,7 +20,7 @@
       <div *ngIf=" selected == '1' " >
         <h6>Selecciona un día</h6>
         <input type="date" style="height: 40px; width: 13vmax; background: #212121" class="form-control"/>
-        <canvas baseChart width="100" height="50"
+        <canvas baseChart width="70" height="50"
                 [datasets]="lineChartData"
                 [labels]="lineChartLabels"
                 [options]="lineChartOptions"

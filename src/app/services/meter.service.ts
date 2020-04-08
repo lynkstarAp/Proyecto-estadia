@@ -74,4 +74,10 @@ export class MeterService {
     // const options = {params: new HttpParams().set('mac', id) };
     return this._http.get(this.baseURL + 'consumos-medidor-all', { headers });
   }
+
+  selectOneMeter(model) {
+    let headers = new HttpHeaders().set('token', 'aovTUgvSrQQbDzOdHpLIvkvfRlN38WLlHGTeblT9beWk7RdFcv37XYJ1LYHc');
+    return this._http.post( this.baseURL+'medidor-usr', {model}, {headers} );
+
+  }
 }

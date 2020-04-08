@@ -39,19 +39,18 @@ export class ButtonsComponent implements OnInit {
   @ViewChild(MatSort, {static: true}) sort: MatSort;
   // private router: any;
 
-  constructor(public ususarioService: UsuarioService, public router: Router) {
+  constructor(public usuarioService: UsuarioService) {
 
     this.verUsuarios();
   }
 
   verUsuarios() {
-    this.ususarioService.leerUsuarios().subscribe(
+    this.usuarioService.leerUsuarios().subscribe(
       (userFromApi: Usuarios) => {
         this.usuarios = userFromApi;
         // @ts-ignore
         this.tamanio = this.usuarios.length;
-        console.log(userFromApi);
-
+        // console.log(userFromApi);
         const users = Array.from({length: this.tamanio}, (_, k) => this.createNewUser(k + 1));
         this.dataSource = new MatTableDataSource(users);
 
@@ -108,7 +107,7 @@ export class ButtonsComponent implements OnInit {
     if (this.nombreValidacion == true && this.apellido1Validacion == true && this.usuarioValidacion == true &&
       this.contraseniaValidacion == true && this.tipoUsu != 0) {
       // console.log( { 'nombre': this.nombre, 'apellido1': this.apellido1, 'apellido2': this.apellido2, 'usuario': this.usuario, 'contraseña': this.contrasenia, 'tipo_usuario': this.tipoUsu } );
-      this.ususarioService.agregarUsuario({
+      this.usuarioService.agregarUsuario({
         'nombre': this.nombre,
         'apellido1': this.apellido1,
         'apellido2': this.apellido2,
@@ -146,7 +145,7 @@ export class ButtonsComponent implements OnInit {
       }
 
     }
-    this.ususarioService.saveData(usu);
+    this.usuarioService.saveData(usu);
   }
 
   ngOnInit() {
@@ -162,17 +161,17 @@ export class ButtonsComponent implements OnInit {
     }
   }
 
-  gotoProductDetailsV2(url) {
-
-    var myurl = `inicio`;
-    this.router.navigateByUrl(myurl).then(e => {
-      if (e) {
-        console.log("Navigation is successful!");
-      } else {
-        console.log("Navigation has failed!");
-      }
-    });
-  }
+  // gotoProductDetailsV2(url) {
+  //
+  //   var myurl = `inicio`;
+  //   this.router.navigateByUrl(myurl).then(e => {
+  //     if (e) {
+  //       console.log("Navigation is successful!");
+  //     } else {
+  //       console.log("Navigation has failed!");
+  //     }
+  //   });
+  // }
   // elements: any = [
   //   {id: 1, Usuario: 'yaja2', Nombre: 'Yajaira', Apellido1: 'Castañeda', Apellido2: 'León', Estatus: '1', Tipo_Usuario: 'Master', Acción: ''},
   //   {id: 2, Usuario: 'david5', Nombre: 'David', Apellido1: 'Mendieta', Apellido2: 'Morales', Estatus: '1', Tipo_Usuario: 'Master', Acción: ''},

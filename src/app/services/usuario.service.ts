@@ -27,13 +27,25 @@ export class UsuarioService {
     return this._http.post( this.baseURL + 'registrar-usuario', {model}, {headers});
   }
 
+  acctuzarUsuario(model){
+    let headers = new HttpHeaders();
+    headers = headers.append( 'token','aovTUgvSrQQbDzOdHpLIvkvfRlN38WLlHGTeblT9beWk7RdFcv37XYJ1LYHc' );
+    return this._http.post(this.baseURL + 'actualizar-usuario', {model}, {headers});
+  }
+
+  selectAllMeterUsu(model){
+    let headers = new HttpHeaders();
+    headers = headers.append( 'token','aovTUgvSrQQbDzOdHpLIvkvfRlN38WLlHGTeblT9beWk7RdFcv37XYJ1LYHc' );
+    return this._http.post( this.baseURL + 'ver-usuario-medidor', {model}, {headers});
+  }
+
   saveData(user){
     this.usuario = user;
-    console.log("service: " + this.usuario);
+    // console.log("service: " + this.usuario);
   }
 
   readData(){
-    console.log(this.usuario);
+    // console.log(this.usuario);
     return this.usuario;
   }
 

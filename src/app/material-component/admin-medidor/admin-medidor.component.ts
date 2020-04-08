@@ -11,6 +11,11 @@ import {ChartEvent} from "ng-chartist";
 import {MatTableDataSource} from "@angular/material/table";
 import {MatPaginator} from "@angular/material/paginator";
 import {MatSort} from "@angular/material/sort";
+import {Medidor, MedidorUsu} from "../../models/Medidor";
+import {UsuarioService} from "../../services/usuario.service";
+import {Usuarios} from "../../models/Usuario";
+import {Router} from "@angular/router";
+import {MeterService} from "../../services/meter.service";
 
 export interface Chart {
   type: ChartType;
@@ -43,22 +48,7 @@ const FECHAS: string[] = [
   '20/09/18', '08/08/19', '05/05/20', '25/07/19', '24/01/20', '31/07/19', '02/02/18', '04/10/19', '14/04/20'
 ];
 
-function createNewUser(id: number): UserData {
-
-  const serie = SERIES[Math.round(Math.random() * (SERIES.length - 1))];
-
-  const fecha = FECHAS[Math.round(Math.random() * (FECHAS.length - 1))];
-
-
-
-  return {
-    id: id.toString(),
-    fecha: fecha,
-    serie: serie,
-    estado: COLORS[Math.round(Math.random() * (COLORS.length - 1))]
-
-  };
-}
+let macMed ;
 //----------------------------------------------------------------------------------------------------------------------
 
 @Component({
@@ -66,7 +56,13 @@ function createNewUser(id: number): UserData {
   templateUrl: './admin-medidor.component.html',
   styleUrls: ['./admin-medidor.component.scss']
 })
-export class AdminMedidorComponent implements OnInit{
+export class AdminMedidorComponent implements OnInit {
+  userMeter: MedidorUsu;
+  usuarioSeleccionado: Usuarios;
+  tamanio: number;
+  contador = 0;
+
+  medidorSeleccionado: Medidor;
 
   mobileQuery: MediaQueryList;
   private _mobileQueryListener: () => void;
@@ -76,25 +72,84 @@ export class AdminMedidorComponent implements OnInit{
     media: MediaMatcher,
     public menuItems: MenuItems,
     public dialog: MatDialog,
+    public usuarioService: UsuarioService,
+    public router: Router,
+    public medidorServiceService: MeterService,
   ) {
     this.mobileQuery = media.matchMedia('(min-width: 768px)');
     this._mobileQueryListener = () => changeDetectorRef.detectChanges();
     this.mobileQuery.addListener(this._mobileQueryListener);
 
-    const users = Array.from({length: 100}, (_, k) => createNewUser(k + 1));
-    this.dataSource = new MatTableDataSource(users);
+    this.selectAllMeter();
+    this.leerUsuarios();
+
+  }
+
+  leerUsuarios() {
+    if (this.usuarioService.readData() == null) {
+      this.redireccion();
+    }
+  }
+
+  redireccion() {
+
+    this.router.navigateByUrl('').then(e => {
+      if (e) {
+        console.log("Navigation is successful!");
+      } else {
+        console.log("Navigation has failed!");
+      }
+    });
+  }
+
+
+  selectAllMeter() {
+
+    this.usuarioSeleccionado = this.usuarioService.readData();
+    this.usuarioService.selectAllMeterUsu({'usuario': this.usuarioSeleccionado.usuario}).subscribe(
+      (meterFromApi: MedidorUsu) => {
+        // console.log(meterFromApi);
+        this.userMeter = meterFromApi;
+        // @ts-ignore
+        this.tamanio = this.userMeter.length;
+
+        const users = Array.from({length: this.tamanio}, (_, k) => this.createNewUser(k + 1));
+        this.dataSource = new MatTableDataSource(users);
+
+        this.dataSource.paginator = this.paginator;
+        this.dataSource.sort = this.sort;
+      }
+    );
+  }
+
+  createNewUser(id: number): MedidorUsu {
+    //['id', 'serie', 'estado', 'fecha', 'grafica'];
+    this.contador++;
+    return {
+      estado: String(this.contador),
+      estado_relevador: this.userMeter[this.contador - 1].estado_relevador,
+      estatus: 0,
+      fch_medidor: "",
+      fch_registro: this.userMeter[this.contador - 1].fch_registro,
+      latitud: 0,
+      longitud: 0,
+      mac: this.userMeter[this.contador - 1].mac,
+      num_serie: this.userMeter[this.contador - 1].num_serie,
+      tipo_medidor: {estatus: 0, tipo: ""}
+
+
+    };
   }
 
 //----------------------------------------------------------------------------------------------------------------------
   displayedColumns: string[] = ['id', 'serie', 'estado', 'fecha', 'grafica'];
-  dataSource: MatTableDataSource<UserData>;
+  dataSource: MatTableDataSource<MedidorUsu>;
 
   @ViewChild(MatPaginator, {static: true}) paginator: MatPaginator;
   @ViewChild(MatSort, {static: true}) sort: MatSort;
 
-  ngOnInit(){
-    this.dataSource.paginator = this.paginator;
-    this.dataSource.sort = this.sort;
+  ngOnInit() {
+
   }
 
   applyFilter(event: Event) {
@@ -105,57 +160,46 @@ export class AdminMedidorComponent implements OnInit{
       this.dataSource.paginator.firstPage();
     }
   }
+
 //----------------------------------------------------------------------------------------------------------------------
 
-  // elements: any = [
-  //   {id: 1, Serie: '34EDT', Estado: '', Fecha: '12/03/19',  Grafica: ''},
-  //   {id: 2, Serie: '123EDY', Estado: '', Fecha: '14/12/19', Graficaa: ''},
-  //   {id: 3, Serie: '980SDE', Estado: '', Fecha: '24/02/20',  Grafica: ''}
-  // ];
-  // headElements = ['ID', 'N° de Serie', 'Estado de Relevador','Fecha de Registro','Gráficas'];
 
-
-  clickedMarker(label: string, index: number) {
-    // this.openDialog('Instántaneos');
-  }
+  controladorOpenModa = false;
 
   openDialog(v): void {
+    if (this.controladorOpenModa == false) {
+      this.controladorOpenModa = true;
+      macMed = v;
+      this.selectMeterBasicInfo(macMed);
+      const dialogRef = this.dialog.open(ModalM, {
+        width: '90%',
+        height: '80%',
+        disableClose: false,
+        hasBackdrop: false,
+        position: {'bottom': '40px', 'left': '150px'},
+        panelClass: 'my-dialog'
+      });
 
-    const dialogRef = this.dialog.open(ModalM, {
-      width: '90%',
-      height: '90%',
-      disableClose: false,
-      hasBackdrop: false,
-      position: {'bottom': '40px', 'left': '150px'},
-      panelClass: 'my-dialog'
-    });
+      dialogRef.afterClosed().subscribe(result => {
+        console.log('The dialog was closed');
+        this.controladorOpenModa = false;
+      });
+    }
+  }
 
-    dialogRef.afterClosed().subscribe(result => {
-      console.log('The dialog was closed');
+  selectMeterBasicInfo(mac){
+  this.medidorServiceService.selectOneMeter({'mac':mac}).subscribe(
+    (meterFromApi: Medidor) => {
+      this.medidorSeleccionado = meterFromApi;
+      console.log(this.medidorSeleccionado.num_serie);
+      num_serie = this.medidorSeleccionado.num_serie;
 
-    });
-
+    }
+  );
   }
 
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+let num_serie;
 
 //----------------------------------------------------------------------------------------------------------------------
 @Component({
@@ -167,11 +211,11 @@ export class ModalM {
   selected = '';
 
   public lineChartData: ChartDataSets[] = [
-    { data: [65, 59, 80, 81, 56, 55, 40, 34, 56, 79, 12, 23], label: 'Voltaje' }
+    {data: [65, 59, 80, 81, 56, 55, 40, 34, 56, 79, 12, 23], label: 'Voltaje'}
   ];
 
   public lineChartData2: ChartDataSets[] = [
-    { data: [28, 48, 40, 19, 86, 27, 90, 45, 67, 12, 10, 12], label: 'Corriente' }
+    {data: [28, 48, 40, 19, 86, 27, 90, 45, 67, 12, 10, 12], label: 'Corriente'}
   ];
 
   public lineChartLabels: Label[] = ['00:00:00', '01:00:00', '02:00:00', '03:00:00', '04:00:00', '05:00:00', '06:00:00',
@@ -243,21 +287,23 @@ export class ModalM {
   public lineChartLegend = true;
   public lineChartType = 'line';
 
-  @ViewChild(BaseChartDirective, { static: true }) chart: BaseChartDirective;
+  @ViewChild(BaseChartDirective, {static: true}) chart: BaseChartDirective;
 
   // /*constructor(public dialogRef: MatDialogRef<DialogOverviewExampleDialogComponent>,
   //             @Inject(MAT_DIALOG_DATA) public data: any) { }*/
 
-  public chartHovered({ event, active }: { event: MouseEvent, active: {}[] }): void {
+  public chartHovered({event, active}: { event: MouseEvent, active: {}[] }): void {
     console.log(event, active);
   }
 
   constructor(public dialogRef: MatDialogRef<Modal>,
-              @Inject(MAT_DIALOG_DATA) public data: any){}
+              @Inject(MAT_DIALOG_DATA) public data: any) {
+  }
 
   onNoClick(): void {
     this.dialogRef.close();
   }
+
 //-------------------------------------GRAFICA DE PERDIDAS DE ENERGIA---------------------------------------------------
   public doughnutChartLabels: Label[] = ['Área', 'Testigo', 'Perdidas'];
   public doughnutChartData: MultiDataSet = [
@@ -273,7 +319,7 @@ export class ModalM {
   public barChartOptions: ChartOptions = {
     responsive: true,
 
-    scales: { xAxes: [{}], yAxes: [{}] },
+    scales: {xAxes: [{}], yAxes: [{}]},
     plugins: {
       datalabels: {
         anchor: 'end',
@@ -293,12 +339,12 @@ export class ModalM {
   public barChartLegend = true;
 
   public barChartData: ChartDataSets[] = [
-    { data: [65, 59, 80, 81, 56, 55, 40, 34, 67, 56], label: 'Kwh' }
+    {data: [65, 59, 80, 81, 56, 55, 40, 34, 67, 56], label: 'Kwh'}
   ];
 //-------------------------------------GRAFICA DE COMUNICACIONES--------------------------------------------------------
   public lineChartDataC: ChartDataSets[] = [
-    { data: [16, 17, 26, 35, 22, 11, 29, 23, 18, 33, 30, 27], label: 'Paquetes Enviados' },
-    { data: [10, 11, 20, 29, 26, 5, 23, 17, 12, 27, 24, 21], label: 'Paquetes Perdidos' }
+    {data: [16, 17, 26, 35, 22, 11, 29, 23, 18, 33, 30, 27], label: 'Paquetes Enviados'},
+    {data: [10, 11, 20, 29, 26, 5, 23, 17, 12, 27, 24, 21], label: 'Paquetes Perdidos'}
   ];
 
   public lineChartLabelsC: Label[] = ['00:00:00', '01:00:00', '02:10:00', '04:00:00', '05:00:00', '06:00:00', '07:05:00',
@@ -383,5 +429,7 @@ export class ModalM {
   ];
 
   public doughnutChartTypeBC: ChartType = 'doughnut';
+  num_serie2: string;
+  macMed2 = macMed;
 
 }

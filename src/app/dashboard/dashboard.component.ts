@@ -1,8 +1,8 @@
 import {Component, AfterViewInit, ChangeDetectorRef, Inject, ViewChild, OnInit} from '@angular/core';
-import { MouseEvent } from '@agm/core';
+import {MouseEvent} from '@agm/core';
 
 import * as Chartist from 'chartist';
-import { ChartEvent } from 'ng-chartist';
+import {ChartEvent} from 'ng-chartist';
 import {ChartDataSets, ChartOptions, ChartType} from 'chart.js';
 import {MAT_DIALOG_DATA, MatDialog, MatDialogRef} from "@angular/material/dialog";
 import {MenuItems} from "../shared/menu-items/menu-items";
@@ -10,7 +10,7 @@ import {MediaMatcher} from "@angular/cdk/layout";
 import {BaseChartDirective, Color, Label, MultiDataSet} from "ng2-charts";
 
 //----------------------------------------------------------------------------------------------------------------------
-import { HttpClient} from "@angular/common/http";
+import {HttpClient} from "@angular/common/http";
 import {MeterService} from "../services/meter.service";
 import {Medidor, MedidorConsumos, MedidorInstantaneo} from "../models/Medidor";
 import {ColectorService} from "../services/colector.service";
@@ -22,26 +22,25 @@ import {ConsumoService} from "../services/consumo.service";
 //----------------------------------------------------------------------------------------------------------------------
 
 
-
 declare var require: any;
 
 const data: any = require('./data.json');
-let noSerie: string  = "";
+let noSerie: string = "";
 let estadoRelevador: string = "";
 const neteo: string = "";
 
 export interface Chart {
-	type: ChartType;
-	data: Chartist.IChartistData;
-	options?: any;
-	responsiveOptions?: any;
-	events?: ChartEvent;
+  type: ChartType;
+  data: Chartist.IChartistData;
+  options?: any;
+  responsiveOptions?: any;
+  events?: ChartEvent;
 }
 
 @Component({
-	selector: 'app-dashboard',
-	templateUrl: './dashboard.component.html',
-	styleUrls: ['./dashboard.component.scss']
+  selector: 'app-dashboard',
+  templateUrl: './dashboard.component.html',
+  styleUrls: ['./dashboard.component.scss']
 })
 export class DashboardComponent {
 
@@ -64,7 +63,6 @@ export class DashboardComponent {
 
 
   }
-
 
 
   styles = [
@@ -265,37 +263,40 @@ export class DashboardComponent {
   medidor: Medidor;
   colector: Colectores;
 
-selectMeter() {
-  this.medidorService.selectAllMeter().subscribe(
+  selectMeter() {
+    this.medidorService.selectAllMeter().subscribe(
+      (meterFromTheApi: Medidor) => {
+        this.medidor = meterFromTheApi;
+        console.log(meterFromTheApi);
+      }, (err: any) => {
+        console.error(err);
 
-    (meterFromTheApi: Medidor) => {
-      this.medidor = meterFromTheApi;
-      console.log(meterFromTheApi);
-    }, (err: any) => {
-      console.error(err);
-
-    }
-  );
-}
+      }
+    );
+  }
 
 // @ts-ignore
-  urlM : marker =  '../../../assets/images/users/mcr_min.png' ;
+  urlM: marker = '../../../assets/images/users/mcr_min.png';
 
 //----------------------------------------------------------------------------------------------------------------------
   clickedMarker(label: string, index: number) {
     // this.openDialog('Instántaneos');
   }
 
+  controladorOpenModa = false;
+
   openDialog(v): void {
-    console.log("mac -> " + v.mac);
-mac = v.mac;
-if(v.mac != null){
-  tipo = "medidor";
-} else {
-  tipo = "colector";
-}
-    noSerie = v.num_serie;
-    estadoRelevador = v.estado_relevador;
+    if (this.controladorOpenModa == false) {
+      this.controladorOpenModa = true;
+      console.log("mac -> " + v.mac);
+      mac = v.mac;
+      if (v.mac != null) {
+        tipo = "medidor";
+      } else {
+        tipo = "colector";
+      }
+      noSerie = v.num_serie;
+      estadoRelevador = v.estado_relevador;
 
       const dialogRef = this.dialog.open(Modal, {
         width: '30%',
@@ -308,10 +309,11 @@ if(v.mac != null){
 
       dialogRef.afterClosed().subscribe(result => {
         console.log('The dialog was closed');
-
+        this.controladorOpenModa = false;
       });
-
+    }
   }
+
 //----------------------------------------------------------------------------------------------------------------------
 //   mapClicked($event: MouseEvent) {
 //     this.markers.push({
@@ -329,7 +331,7 @@ if(v.mac != null){
   }
 
 //----------------------------------------------------MARCADOR----------------------------------------------------------
-  selectColector(){
+  selectColector() {
     this.colectorService.selectAllColectores().subscribe(
       (colectorFromTheApi: Colectores) => {
         this.colector = colectorFromTheApi;
@@ -342,7 +344,7 @@ if(v.mac != null){
   }
 
   // @ts-ignore
-  urlC : marker =  '../../../assets/images/users/protcomm_i_max.png' ;
+  urlC: marker = '../../../assets/images/users/protcomm_i_max.png';
   // marker: colector[] = [
   //   {
   //     lat: 26.2331619,
@@ -401,6 +403,7 @@ interface colector {
   name: string;
   url: string;
 }
+
 let mac = "";
 let tipo = "";
 let dataInstantaneaVol: number[] = [];
@@ -408,8 +411,8 @@ let dataInstantaneoHr: string[] = [];
 let dataInstantaneoCor: number[] = [];
 
 let dataPerdidaDada: number = 0;
-let dataPerdidaGen:  number = 0;
-let dataPerdidaCons:  number = 0;
+let dataPerdidaGen: number = 0;
+let dataPerdidaCons: number = 0;
 let dataPerdidaDadaT: number = 0;
 let dataPerdidaGenT: number = 0;
 let dataPerdidaConsT: number = 10;
@@ -439,26 +442,29 @@ let consumosNeteoTotal: number = 0;
 let consumosActualT: number[] = [];
 let consumosAnteriorT: number[] = [];
 let consumosTotales: number[] = [];
+
 //-------------------------------------------------------GRAFICA INSTANTANEOS-------------------------------------------
 @Component({
   templateUrl: '../material-component/graficas/graficas.component.html'
 })
 
-export class Modal implements OnInit{
-final = 0;
+export class Modal implements OnInit {
+  final = 0;
+
   ngOnInit(): void {
 
   }
+
 // data: string[] = [];
-  selectInsta(fecha){
-let medidorIntenataneo: MedidorInstantaneo = null;
+  selectInsta(fecha) {
+    let medidorIntenataneo: MedidorInstantaneo = null;
     this.medidorService.selectInstaMeter({"mac": mac, "fecha": fecha}).subscribe(
       (meterFromTheApi: MedidorInstantaneo) => {
         // @ts-ignore
-        if(meterFromTheApi != null) {
+        if (meterFromTheApi != null) {
           medidorIntenataneo = meterFromTheApi;
           // @ts-ignore
-          for(let i of medidorIntenataneo){
+          for (let i of medidorIntenataneo) {
             dataInstantaneaVol.push(i['voltaje']);
             let fechaHoraIns = String(i['fecha_hora']);
             let temp = fechaHoraIns.split(" ");
@@ -475,15 +481,15 @@ let medidorIntenataneo: MedidorInstantaneo = null;
 
   }
 
-  selectInstaCol(fecha){
+  selectInstaCol(fecha) {
     let medidorIntenataneo: ColectorInstantaneo = null;
-    this.colectorService.selectInstaMeter(mac,fecha).subscribe(
+    this.colectorService.selectInstaMeter(mac, fecha).subscribe(
       (meterFromTheApi: ColectorInstantaneo) => {
         // @ts-ignore
-        if(meterFromTheApi != null) {
+        if (meterFromTheApi != null) {
           medidorIntenataneo = meterFromTheApi;
           // @ts-ignore
-          for(let i of medidorIntenataneo){
+          for (let i of medidorIntenataneo) {
             dataInstantaneaVol.push(i['voltaje']);
             let fechaHoraIns = String(i['fecha_hora']);
             let temp = fechaHoraIns.split(" ");
@@ -497,14 +503,15 @@ let medidorIntenataneo: MedidorInstantaneo = null;
     );
 
   }
+
   selected = '';
 
   public lineChartData: ChartDataSets[] = [
-    { data: dataInstantaneaVol, label: 'Voltaje' }
+    {data: dataInstantaneaVol, label: 'Voltaje'}
   ];
 
   public lineChartData2: ChartDataSets[] = [
-    { data: dataInstantaneoCor, label: 'Corriente' }
+    {data: dataInstantaneoCor, label: 'Corriente'}
   ];
 
   public lineChartLabels: Label[] = dataInstantaneoHr;
@@ -575,12 +582,12 @@ let medidorIntenataneo: MedidorInstantaneo = null;
   public lineChartLegend = true;
   public lineChartType = 'line';
 
-  @ViewChild(BaseChartDirective, { static: true }) chart: BaseChartDirective;
+  @ViewChild(BaseChartDirective, {static: true}) chart: BaseChartDirective;
 
   // /*constructor(public dialogRef: MatDialogRef<DialogOverviewExampleDialogComponent>,
   //             @Inject(MAT_DIALOG_DATA) public data: any) { }*/
 
-  public chartHovered({ event, active }: { event: MouseEvent, active: {}[] }): void {
+  public chartHovered({event, active}: { event: MouseEvent, active: {}[] }): void {
     // console.log(event, active);
   }
 
@@ -590,31 +597,32 @@ let medidorIntenataneo: MedidorInstantaneo = null;
               public medidorService: MeterService,
               public comunicacionService: ComunicacionService,
               public consumosService: ConsumoService,
-              public colectorService: ColectorService){
+              public colectorService: ColectorService) {
 
   }
 
   onNoClick(): void {
     this.dialogRef.close();
   }
+
 //-------------------------------------GRAFICA DE PERDIDAS DE ENERGIA---------------------------------------------------
   selectLostEnergi() {
     if (this.numeroSerie != null) {
       this.selectLostEnergyMeter();
 
-  }else {
+    } else {
       this.selectLostEnergyConc();
     }
   }
 
-  selectLostEnergyMeter(){
+  selectLostEnergyMeter() {
     dataPerdidaTSuma.length = 0;
     dataPerdidaT.length = 0;
     dataPerdidaGenT = 0;
     dataPerdidaDadaT = 0;
     dataPerdidaConsT = 0;
     let medidorIntenataneo: MedidorInstantaneo = null;
-    this.medidorService.selectInstaMeter({'mac': mac, "fecha": '20' }).subscribe(
+    this.medidorService.selectInstaMeter({'mac': mac, "fecha": '20'}).subscribe(
       (meterFromTheApi: MedidorInstantaneo) => {
         // @ts-ignore
         if (meterFromTheApi != null) {
@@ -651,7 +659,8 @@ let medidorIntenataneo: MedidorInstantaneo = null;
       }
     );
   }
-  selectLostEnergyConc(){
+
+  selectLostEnergyConc() {
     dataPerdidaTSuma.length = 0;
     dataPerdidaT.length = 0;
     dataPerdidaGenT = 0;
@@ -689,16 +698,18 @@ let medidorIntenataneo: MedidorInstantaneo = null;
       }
     );
   }
+
   public doughnutChartLabels: Label[] = ['Área', 'Testigo', 'Perdidas'];
   public doughnutChartData: ChartDataSets[] = [
-    { data: dataPerdidaT, label: 'Corriente' }
+    {data: dataPerdidaT, label: 'Corriente'}
   ];
 
   public doughnutChartData2: ChartDataSets[] = [
-    { data: dataPerdidaTSuma}
+    {data: dataPerdidaTSuma}
   ];
 
   public doughnutChartType: ChartType = 'doughnut';
+
 //-------------------------------------GRAFICA DE PERFILES--------------------------------------------------------------
   selectPerfil() {
     let medidorIntenataneo: MedidorInstantaneo = null;
@@ -709,7 +720,11 @@ let medidorIntenataneo: MedidorInstantaneo = null;
       datosPerfil.length = 0;
       fechaPerfil.length = 0;
 
-      this.medidorService.selectPerfil(mac, fechaInicial, fechaFinal, {"fecha1": fechaInicial, "fecha2": fechaFinal, "mac1": mac}).subscribe(
+      this.medidorService.selectPerfil(mac, fechaInicial, fechaFinal, {
+        "fecha1": fechaInicial,
+        "fecha2": fechaFinal,
+        "mac1": mac
+      }).subscribe(
         (meterFromTheApi: MedidorInstantaneo) => {
           // @ts-ignore
           if (meterFromTheApi != null) {
@@ -728,7 +743,7 @@ let medidorIntenataneo: MedidorInstantaneo = null;
           console.error(err);
         }
       );
-console.log(datosPerfil);
+      console.log(datosPerfil);
       console.log(fechaPerfil);
     }
   }
@@ -770,7 +785,7 @@ console.log(datosPerfil);
   public barChartOptions: ChartOptions = {
     responsive: true,
 
-    scales: { xAxes: [{}], yAxes: [{}] },
+    scales: {xAxes: [{}], yAxes: [{}]},
     plugins: {
       datalabels: {
         anchor: 'end',
@@ -790,13 +805,13 @@ console.log(datosPerfil);
   public barChartLegend = true;
 
   public barChartData: ChartDataSets[] = [
-    { data: datosPerfil, label: 'Kwh' }
+    {data: datosPerfil, label: 'Kwh'}
   ];
 //-------------------------------------GRAFICA DE COMUNICACIONES--------------------------------------------------------
   // @ts-ignore
   public lineChartDataC: ChartDataSets[] = [
-    { data: comunicacionEnviados, label: 'Paquetes Enviados' },
-    { data: comunicacionPerdidos, label: 'Paquetes Perdidos' }
+    {data: comunicacionEnviados, label: 'Paquetes Enviados'},
+    {data: comunicacionPerdidos, label: 'Paquetes Perdidos'}
   ];
 
   public lineChartLabelsC: Label[] = comunicacionFecha;
@@ -876,7 +891,7 @@ console.log(datosPerfil);
   ];
 
   public doughnutChartData3BC: ChartDataSets[] = [
-    { data: consumosTotales }
+    {data: consumosTotales}
   ];
 
   public doughnutChartTypeBC: ChartType = 'doughnut';
@@ -884,65 +899,92 @@ console.log(datosPerfil);
   //--------------------------- CONSUMOS -------------------------------------------------------------
   public doughnutChartLabels1: Label[] = ['Área', 'Testigo', 'Perdidas'];
   public doughnutChartData1: ChartDataSets[] = [
-    { data: consumosActualT, label: 'Corriente' }
+    {data: consumosActualT, label: 'Corriente'}
   ];
 
   public doughnutChartData11: ChartDataSets[] = [
-    { data: consumosAnteriorT}
+    {data: consumosAnteriorT}
   ];
 
   public doughnutChartType1: ChartType = 'doughnut';
+
   //------------------------------------ PETICION ------------------------------------------------------------------------
 
-  selectMeterConsumo(){
+  selectMeterConsumo() {
     console.log('ejecuto metodo ' + mac);
   }
 
 
-  startDate:string = "";
-  date=new Date();
+  startDate: string = "";
+  date = new Date();
   dataPerdidaDadaT1 = dataPerdidaDadaT;
   estadoRelevador1 = estadoRelevador;
   numeroSerie = noSerie;
   macp = mac;
 
-  fech(v){
+  fech(v) {
     console.log(v);
   }
 
-  selectFechaInsta(myDatepicker){
+  selectFechaInsta(myDatepicker) {
     dataInstantaneaVol.length = 0;
     dataInstantaneoHr.length = 0;
     dataInstantaneoCor.length = 0;
     let temp: string = "";
-    temp = String( myDatepicker.startAt );
+    temp = String(myDatepicker.startAt);
     let x = temp.split(" ");
     // console.log(x);
-    if ( x[1] === 'Jan'){ x[1] = '01'; }
-    if ( x[1] === 'Feb'){ x[1] = '02'; }
-    if ( x[1] === 'Mar'){ x[1] = '03'; }
-    if ( x[1] === 'Apr'){ x[1] = '04'; }
-    if ( x[1] === 'May'){ x[1] = '05'; }
-    if ( x[1] === 'Jun'){ x[1] = '06'; }
-    if ( x[1] === 'Jul'){ x[1] = '07'; }
-    if ( x[1] === 'Aug'){ x[1] = '08'; }
-    if ( x[1] === 'Sep'){ x[1] = '09'; }
-    if ( x[1] === 'Oct'){ x[1] = '10'; }
-    if ( x[1] === 'Nov'){ x[1] = '11'; }
-    if ( x[1] === 'Dec'){ x[1] = '12'; }
-    if(x[2].length == 1){ x[2] = '0'+x[2]; }
+    if (x[1] === 'Jan') {
+      x[1] = '01';
+    }
+    if (x[1] === 'Feb') {
+      x[1] = '02';
+    }
+    if (x[1] === 'Mar') {
+      x[1] = '03';
+    }
+    if (x[1] === 'Apr') {
+      x[1] = '04';
+    }
+    if (x[1] === 'May') {
+      x[1] = '05';
+    }
+    if (x[1] === 'Jun') {
+      x[1] = '06';
+    }
+    if (x[1] === 'Jul') {
+      x[1] = '07';
+    }
+    if (x[1] === 'Aug') {
+      x[1] = '08';
+    }
+    if (x[1] === 'Sep') {
+      x[1] = '09';
+    }
+    if (x[1] === 'Oct') {
+      x[1] = '10';
+    }
+    if (x[1] === 'Nov') {
+      x[1] = '11';
+    }
+    if (x[1] === 'Dec') {
+      x[1] = '12';
+    }
+    if (x[2].length == 1) {
+      x[2] = '0' + x[2];
+    }
 
     temp = x[3] + "-" + x[1] + "-" + x[2];
     // console.log(temp);
 
-    if(noSerie != null) {
+    if (noSerie != null) {
       this.selectInsta(temp);
-    }else {
+    } else {
       this.selectInstaCol(temp);
     }
   }
 
-  selectFechaPerdida(){
+  selectFechaPerdida() {
     // dataPerdidaCons.length = 0;
     // dataPerdidaDada.length = 0;
     // dataPerdidaGen.length = 0;
@@ -972,49 +1014,102 @@ console.log(datosPerfil);
 
   selectFechaInicial(picker) {
     let temp: string = "";
-    temp = String( picker.startAt );
+    temp = String(picker.startAt);
     let x = temp.split(" ");
     // console.log(x);
-    if ( x[1] === 'Jan'){ x[1] = '01'; }
-    if ( x[1] === 'Feb'){ x[1] = '02'; }
-    if ( x[1] === 'Mar'){ x[1] = '03'; }
-    if ( x[1] === 'Apr'){ x[1] = '04'; }
-    if ( x[1] === 'May'){ x[1] = '05'; }
-    if ( x[1] === 'Jun'){ x[1] = '06'; }
-    if ( x[1] === 'Jul'){ x[1] = '07'; }
-    if ( x[1] === 'Aug'){ x[1] = '08'; }
-    if ( x[1] === 'Sep'){ x[1] = '09'; }
-    if ( x[1] === 'Oct'){ x[1] = '10'; }
-    if ( x[1] === 'Nov'){ x[1] = '11'; }
-    if ( x[1] === 'Dec'){ x[1] = '12'; }
-    if(x[2].length == 1){ x[2] = '0'+x[2]; }
+    if (x[1] === 'Jan') {
+      x[1] = '01';
+    }
+    if (x[1] === 'Feb') {
+      x[1] = '02';
+    }
+    if (x[1] === 'Mar') {
+      x[1] = '03';
+    }
+    if (x[1] === 'Apr') {
+      x[1] = '04';
+    }
+    if (x[1] === 'May') {
+      x[1] = '05';
+    }
+    if (x[1] === 'Jun') {
+      x[1] = '06';
+    }
+    if (x[1] === 'Jul') {
+      x[1] = '07';
+    }
+    if (x[1] === 'Aug') {
+      x[1] = '08';
+    }
+    if (x[1] === 'Sep') {
+      x[1] = '09';
+    }
+    if (x[1] === 'Oct') {
+      x[1] = '10';
+    }
+    if (x[1] === 'Nov') {
+      x[1] = '11';
+    }
+    if (x[1] === 'Dec') {
+      x[1] = '12';
+    }
+    if (x[2].length == 1) {
+      x[2] = '0' + x[2];
+    }
 
     temp = x[3] + "-" + x[1] + "-" + x[2];
     fechaInicial = temp;
 
     if (this.numeroSerie != null) {
       this.selectPerfil()
-    } else {}
+    } else {
+    }
   }
 
   selectFechaFinal(picker) {
     let temp: string = "";
-    temp = String( picker.startAt );
+    temp = String(picker.startAt);
     let x = temp.split(" ");
     // console.log(x);
-    if ( x[1] === 'Jan'){ x[1] = '01'; }
-    if ( x[1] === 'Feb'){ x[1] = '02'; }
-    if ( x[1] === 'Mar'){ x[1] = '03'; }
-    if ( x[1] === 'Apr'){ x[1] = '04'; }
-    if ( x[1] === 'May'){ x[1] = '05'; }
-    if ( x[1] === 'Jun'){ x[1] = '06'; }
-    if ( x[1] === 'Jul'){ x[1] = '07'; }
-    if ( x[1] === 'Aug'){ x[1] = '08'; }
-    if ( x[1] === 'Sep'){ x[1] = '09'; }
-    if ( x[1] === 'Oct'){ x[1] = '10'; }
-    if ( x[1] === 'Nov'){ x[1] = '11'; }
-    if ( x[1] === 'Dec'){ x[1] = '12'; }
-    if(x[2].length == 1){ x[2] = '0'+x[2]; }
+    if (x[1] === 'Jan') {
+      x[1] = '01';
+    }
+    if (x[1] === 'Feb') {
+      x[1] = '02';
+    }
+    if (x[1] === 'Mar') {
+      x[1] = '03';
+    }
+    if (x[1] === 'Apr') {
+      x[1] = '04';
+    }
+    if (x[1] === 'May') {
+      x[1] = '05';
+    }
+    if (x[1] === 'Jun') {
+      x[1] = '06';
+    }
+    if (x[1] === 'Jul') {
+      x[1] = '07';
+    }
+    if (x[1] === 'Aug') {
+      x[1] = '08';
+    }
+    if (x[1] === 'Sep') {
+      x[1] = '09';
+    }
+    if (x[1] === 'Oct') {
+      x[1] = '10';
+    }
+    if (x[1] === 'Nov') {
+      x[1] = '11';
+    }
+    if (x[1] === 'Dec') {
+      x[1] = '12';
+    }
+    if (x[2].length == 1) {
+      x[2] = '0' + x[2];
+    }
 
     temp = x[3] + "-" + x[1] + "-" + x[2];
     fechaFinal = temp;
@@ -1027,22 +1122,48 @@ console.log(datosPerfil);
 
   selectFechaComunicacion(picker) {
     let temp: string = "";
-    temp = String( picker.startAt );
+    temp = String(picker.startAt);
     let x = temp.split(" ");
     // console.log(x);
-    if ( x[1] === 'Jan'){ x[1] = '01'; }
-    if ( x[1] === 'Feb'){ x[1] = '02'; }
-    if ( x[1] === 'Mar'){ x[1] = '03'; }
-    if ( x[1] === 'Apr'){ x[1] = '04'; }
-    if ( x[1] === 'May'){ x[1] = '05'; }
-    if ( x[1] === 'Jun'){ x[1] = '06'; }
-    if ( x[1] === 'Jul'){ x[1] = '07'; }
-    if ( x[1] === 'Aug'){ x[1] = '08'; }
-    if ( x[1] === 'Sep'){ x[1] = '09'; }
-    if ( x[1] === 'Oct'){ x[1] = '10'; }
-    if ( x[1] === 'Nov'){ x[1] = '11'; }
-    if ( x[1] === 'Dec'){ x[1] = '12'; }
-    if(x[2].length == 1){ x[2] = '0'+x[2]; }
+    if (x[1] === 'Jan') {
+      x[1] = '01';
+    }
+    if (x[1] === 'Feb') {
+      x[1] = '02';
+    }
+    if (x[1] === 'Mar') {
+      x[1] = '03';
+    }
+    if (x[1] === 'Apr') {
+      x[1] = '04';
+    }
+    if (x[1] === 'May') {
+      x[1] = '05';
+    }
+    if (x[1] === 'Jun') {
+      x[1] = '06';
+    }
+    if (x[1] === 'Jul') {
+      x[1] = '07';
+    }
+    if (x[1] === 'Aug') {
+      x[1] = '08';
+    }
+    if (x[1] === 'Sep') {
+      x[1] = '09';
+    }
+    if (x[1] === 'Oct') {
+      x[1] = '10';
+    }
+    if (x[1] === 'Nov') {
+      x[1] = '11';
+    }
+    if (x[1] === 'Dec') {
+      x[1] = '12';
+    }
+    if (x[2].length == 1) {
+      x[2] = '0' + x[2];
+    }
 
     temp = x[3] + "-" + x[1] + "-" + x[2];
     fechaFinal = temp;
@@ -1056,28 +1177,28 @@ console.log(datosPerfil);
     comunicacionPerdidos.length = 0;
     comunicacionFecha.length = 0;
     console.log("1: " + fechaInicial + " 2: " + fechaFinal);
-      this.comunicacionService.selectComunicacionMedidor({"mac": mac, "fecha": fecha}).subscribe(
-        (comunicacionFromTheApi: Comunicacion) => {
+    this.comunicacionService.selectComunicacionMedidor({"mac": mac, "fecha": fecha}).subscribe(
+      (comunicacionFromTheApi: Comunicacion) => {
+        // @ts-ignore
+        if (comunicacionFromTheApi != null) {
           // @ts-ignore
-          if (comunicacionFromTheApi != null) {
-            // @ts-ignore
-            for (let i of comunicacionFromTheApi) {
-              comunicacionEnviados.push(i['paquetes_env']);
-              comunicacionPerdidos.push(i['paquetes_perd']);
-              let fechaHoraIns = String(i['fecha_hora']);
-              let hora = fechaHoraIns.split(" ");
-              comunicacionFecha.push(hora[1]);
+          for (let i of comunicacionFromTheApi) {
+            comunicacionEnviados.push(i['paquetes_env']);
+            comunicacionPerdidos.push(i['paquetes_perd']);
+            let fechaHoraIns = String(i['fecha_hora']);
+            let hora = fechaHoraIns.split(" ");
+            comunicacionFecha.push(hora[1]);
 
-              // console.log(i + ' /// ' + dataInstantaneaVol + ' /// ' + dataInstantaneoHr + ' /// ' + dataInstantaneoCor);
-            }
-            // console.log(meterFromTheApi );
+            // console.log(i + ' /// ' + dataInstantaneaVol + ' /// ' + dataInstantaneoHr + ' /// ' + dataInstantaneoCor);
           }
-        }, (err: any) => {
-          console.error(err);
+          // console.log(meterFromTheApi );
         }
-      );
-      console.log(datosPerfil);
-      console.log(fechaPerfil);
+      }, (err: any) => {
+        console.error(err);
+      }
+    );
+    console.log(datosPerfil);
+    console.log(fechaPerfil);
 
   }
 
@@ -1113,7 +1234,7 @@ console.log(datosPerfil);
             consumosNeteoAcutal = n['energia_necta_actual'];
             consumosNeteoPasado = n['energia_necta_anterior'];
             consumosNeteoTotal = n['energia_necta_total'];
-console.log(consumosEntregadaAcutal + " " + consumosRecibidaAcutal + " " +consumosNeteoAcutal);
+            console.log(consumosEntregadaAcutal + " " + consumosRecibidaAcutal + " " + consumosNeteoAcutal);
             consumosActualT.push(n['energia_entregada_actual']);
             consumosActualT.push(n['energia_recibida_actual']);
             consumosActualT.push(n['energia_necta_actual']);

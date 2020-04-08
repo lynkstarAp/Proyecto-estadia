@@ -48,3 +48,20 @@ export interface MedidorConsumos {
   estado_relevador: number;
   energia_necta_actual: number;
 }
+
+
+export interface MedidorUsu {
+  num_serie: string;
+  mac: string;
+  fch_registro: string;
+  estado: string;
+  estado_relevador: number;
+  fch_medidor: string;
+  latitud: number;
+  longitud: number;
+  estatus: number;
+  tipo_medidor: {
+    tipo: string;
+    estatus: number;
+  }
+}
