@@ -1,0 +1,24 @@
+
+agm-map {
+  height: 40vmax;
+  width: 90vmax;
+}
+
+.google-maps {
+  position: relative;
+  padding-bottom: 75%;
+  height: 0;
+  overflow: hidden;
+}
+.google-maps iframe {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100% !important;
+  height: 100% !important;
+}
+.example-events {
+  height: 200px;
+  border: 1px solid #9e0600;
+  overflow: auto;
+}

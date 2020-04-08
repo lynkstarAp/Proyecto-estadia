@@ -1,0 +1,63 @@
+  <mat-card-content>
+    <section class="example-section">
+      <mat-slide-toggle style="color: white; size: 20px" class="example-margin"
+        [checked]="checked"
+        [(ngModel)] = "checked"
+        (change)="selectMeter()">
+        Medidores
+      </mat-slide-toggle>
+
+      <mat-slide-toggle style="color: white; size: 20px; margin-left: 5%" class="example-margin"
+         [(ngModel)]="visible"
+      >
+        Colectores
+      </mat-slide-toggle>
+    </section>
+  </mat-card-content>
+
+<div  class="col-xl-12" style="text-align: center !important">
+  <div fxFlex.gt-sm="100%" class="google-maps">
+
+    <agm-map
+      [latitude]="lat"
+      [longitude]="lng"
+      [zoom]="zoom"
+      [disableDefaultUI]="false"
+      [zoomControl]="false"
+      [styles]="styles">
+//----------------------------------------------------------------------------------------------------------------------
+      <agm-marker
+      *ngIf="(checked) == true">
+      <agm-marker
+        *ngFor="let m of medidor; let i = index; let menuitem of menuItems.getMenuitem()"
+        (markerClick)="clickedMarker(m.label, i)"
+        (markerClick)="openDialog(m)"
+        [latitude]="m.latitud"
+        [longitude]="m.longitud"
+        [label]="m.label"
+        [markerDraggable]="m.draggable"
+        (dragEnd)="markerDragEnd(m, $event)"
+        [iconUrl]="urlM">
+
+      </agm-marker>
+      </agm-marker>
+//----------------------------------------------------------------------------------------------------------------------
+      <agm-marker
+        *ngIf="(visible) == true">
+        <agm-marker
+          *ngFor="let c of colector; let i = index; let menuitem of menuItems.getMenuitem()"
+          (markerClick)="clickedMarkers(c.label, i)"
+          (markerClick)="openDialog(c)"
+          [latitude]="c.latitud"
+          [longitude]="c.longitud"
+          [label]="c.label"
+          [markerDraggable]="c.draggable"
+          (dragEnd)="markersDragEnd(c, $event)"
+          [iconUrl]="urlC">
+
+        </agm-marker>
+      </agm-marker>
+//----------------------------------------------------------------------------------------------------------------------
+    </agm-map>
+  </div>
+</div>

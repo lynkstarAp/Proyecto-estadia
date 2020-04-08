@@ -1,0 +1,124 @@
+<div class="col-md-12" style="text-align: right !important">
+  <button cdkDrag cdkDragRootElement=".cdk-overlay-pane" class="close" color="warn" mat-button (click)="onNoClick()" tabindex="-1" >X</button>
+  <h6 style="color: white">Selecciona una Opción</h6>
+</div>
+<div mat-dialog-title  class="flex-container">
+  <div class="flex-item">
+    <div style="display: block" mat-dialog-actions>
+      <h6 style="color: white">N° de Serie:</h6>
+      <h6 style="color: white">Estado del relevador:</h6>
+      <h6 style="color: white">Neteo Energía:</h6>
+
+      <mat-select style="height: 45px" class="form-control" [(value)]="selected">
+        <mat-option value="1" selected> Instántaneos </mat-option>
+        <mat-option value="2"> Pérdidas de Energía </mat-option>
+        <mat-option value="3"> Perfiles </mat-option>
+        <mat-option value="4"> Comunicaciones </mat-option>
+        <mat-option value="5"> Balance de Consumos </mat-option>
+      </mat-select><br>
+      <!--------------------------------------------------------------------------------------------------------------------->
+      <div *ngIf=" selected == '1' " >
+        <h6>Selecciona un día</h6>
+        <input type="date" style="height: 40px; width: 13vmax; background: #212121" class="form-control"/>
+        <canvas baseChart width="100" height="50"
+                [datasets]="lineChartData"
+                [labels]="lineChartLabels"
+                [options]="lineChartOptions"
+                [colors]="lineChartColors"
+                [legend]="lineChartLegend"
+                [chartType]="lineChartType"
+                (chartHover)="chartHovered($event)">
+        </canvas><hr>
+
+        <canvas baseChart width="100" height="50"
+                [datasets]="lineChartData2"
+                [labels]="lineChartLabels"
+                [options]="lineChartOptions"
+                [colors]="lineChartColors2"
+                [legend]="lineChartLegend"
+                [chartType]="lineChartType"
+                (chartHover)="chartHovered($event)">
+        </canvas>
+      </div>
+      <!--------------------------------------------------------------------------------------------------------------------->
+      <div *ngIf="selected == '2'">
+        <canvas baseChart width="100" height="50"
+                [data]="doughnutChartData"
+                [labels]="doughnutChartLabels"
+                [chartType]="doughnutChartType"
+                (chartHover)="chartHovered($event)">
+        </canvas><hr>
+        <canvas baseChart width="100" height="50"
+                [data]="doughnutChartData2"
+                [labels]="doughnutChartLabels"
+                [chartType]="doughnutChartType"
+                (chartHover)="chartHovered($event)">
+        </canvas>
+      </div>
+      <!--------------------------------------------------------------------------------------------------------------------->
+      <div *ngIf="selected == '3' ">
+        <form>
+          <h6 style="color: white">Día Inicial</h6>
+          <input type="date" style="height: 40px; width: 13vmax; background: #212121" class="form-control"/>
+          <h6 style="color: white">Día Final</h6>
+          <input type="date" style="height: 40px; width: 13vmax; background: #212121" class="form-control"/>
+        </form>
+
+        <canvas baseChart width="100" height="50"
+                [datasets]="barChartData"
+                [labels]="barChartLabels"
+                [options]="barChartOptions"
+                [colors]="barChartColors"
+                [legend]="barChartLegend"
+                [chartType]="barChartType"
+                (chartHover)="chartHovered($event)">
+        </canvas>
+      </div>
+      <!--------------------------------------------------------------------------------------------------------------------->
+      <div *ngIf="selected == '4'">
+        <h6>Selecciona un día</h6>
+        <input type="date" style="height: 40px; width: 13vmax; background: #212121" class="form-control"/>
+        <canvas baseChart width="100" height="50"
+                [datasets]="lineChartDataC"
+                [labels]="lineChartLabelsC"
+                [options]="lineChartOptionsC"
+                [colors]="lineChartColorsC"
+                [legend]="lineChartLegendC"
+                [chartType]="lineChartTypeC"
+                (chartHover)="chartHovered($event)">
+        </canvas>
+      </div>
+      <!--------------------------------------------------------------------------------------------------------------------->
+      <div *ngIf="selected == '5'">
+        <div style="display: block" mat-dialog-actions class="mdi-4">
+          <h6 style="color: white">Bimestre Actual</h6>
+          <canvas baseChart
+                  [data]="doughnutChartDataBC"
+                  [labels]="doughnutChartLabels"
+                  [chartType]="doughnutChartType"
+                  (chartHover)="chartHovered($event)">
+          </canvas><hr>
+        </div>
+        <div style="display: block" mat-dialog-actions>
+          <h6 style="color: white">Bimestre Anterior</h6>
+          <canvas baseChart
+                  [data]="doughnutChartData2BC"
+                  [labels]="doughnutChartLabelsBC"
+                  [chartType]="doughnutChartType"
+                  (chartHover)="chartHovered($event)">
+          </canvas><hr>
+        </div>
+
+        <div style="display: block" mat-dialog-actions>
+          <h6 style="color: white">Total Consumo</h6>
+          <canvas baseChart
+                  [data]="doughnutChartData3BC"
+                  [labels]="doughnutChartLabels"
+                  [chartType]="doughnutChartTypeBC"
+                  (chartHover)="chartHovered($event)">
+          </canvas>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

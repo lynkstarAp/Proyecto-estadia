@@ -1,0 +1,151 @@
+<div class="col-md-12" style="text-align: right !important">
+  <button cdkDrag cdkDragRootElement=".cdk-overlay-pane" class="close" color="warn" mat-button (click)="onNoClick()" tabindex="-1" >X</button>
+  <h6 style="color: white">Selecciona una Opción</h6>
+</div>
+<div mat-dialog-title  class="flex-container">
+  <div class="flex-item">
+    <div style="display: block" mat-dialog-actions>
+      <h6 style="color: white" *ngIf="numeroSerie != null">N° de Serie: {{numeroSerie}}</h6>
+      <h6 style="color: white" *ngIf="numeroSerie == null">Mac: {{macp}}</h6>
+      <h6 style="color: white" *ngIf="estadoRelevador1 == 0">Estado del relevador: Desactivado</h6>
+      <h6 style="color: white" *ngIf="estadoRelevador1 == 1">Estado del relevador:  <strong style="font-weight: bold">Activado</strong></h6>
+      <h6 style="color: white">Neteo Energía:</h6>
+
+      <form>
+        <input type="checkbox">
+        <label style="color: white"> Reiniciar </label>
+        <input type="checkbox" style="margin-left: 20px">
+        <label style="color: white; size: 20px"> Actualizar </label>
+      </form>
+
+      <mat-select style="height: 45px" class="form-control" [(value)]="selected" >
+        <mat-option value="1" selected > Instántaneos </mat-option>
+        <mat-option value="2" (onSelectionChange)="selectLostEnergi()" > Pérdidas de Energía </mat-option>
+        <mat-option value="3" > Perfiles </mat-option>
+        <mat-option value="4" > Comunicaciones </mat-option>
+        <mat-option value="5" (selectstart)="selectConsumosMed()"> Balance de Consumos </mat-option>
+      </mat-select><br>
+      <!--------------------------------------------------------------------------------------------------------------------->
+      <div *ngIf=" selected == '1' " >
+        <mat-form-field>
+          <input matInput [matDatepicker]="picker" placeholder="Selecciona una fecha" (dateChange)="selectFechaInsta(picker)" style="background: #9e9e9e">
+          <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+          <mat-datepicker #picker startView="year"  ></mat-datepicker>
+        </mat-form-field>
+
+        <canvas baseChart width="100" height="50"
+                [datasets]="lineChartData"
+                [labels]="lineChartLabels"
+                [options]="lineChartOptions"
+                [colors]="lineChartColors"
+                [legend]="lineChartLegend"
+                [chartType]="lineChartType"
+                (chartHover)="chartHovered($event)">
+        </canvas><hr>
+
+        <canvas baseChart width="100" height="50"
+                [datasets]="lineChartData2"
+                [labels]="lineChartLabels"
+                [options]="lineChartOptions"
+                [colors]="lineChartColors2"
+                [legend]="lineChartLegend"
+                [chartType]="lineChartType"
+                (chartHover)="chartHovered($event)">
+        </canvas>
+      </div>
+      <!--------------------------------------------------------------------------------------------------------------------->
+      <div *ngIf="selected == '2'" >
+
+        <canvas baseChart width="100" height="50"
+                [datasets]="doughnutChartData"
+                [labels]="doughnutChartLabels"
+                [chartType]="doughnutChartType"
+                (chartHover)="chartHovered($event)">
+        </canvas><hr>
+        <canvas baseChart width="100" height="50"
+                [datasets]="doughnutChartData2"
+                [labels]="doughnutChartLabels"
+                [chartType]="doughnutChartType"
+                (chartHover)="chartHovered($event)">
+        </canvas>
+      </div>
+      <!--------------------------------------------------------------------------------------------------------------------->
+      <div *ngIf="selected == '3' ">
+        <div>
+          <mat-form-field>
+            <input matInput [matDatepicker]="picker2" placeholder="Dia inicial" (dateChange)="selectFechaInicial(picker2)" style="background: #9e9e9e">
+            <mat-datepicker-toggle matSuffix [for]="picker2"></mat-datepicker-toggle>
+            <mat-datepicker #picker2 startView="year"  ></mat-datepicker>
+          </mat-form-field>
+        </div>
+
+        <div>
+          <mat-form-field>
+            <input matInput [matDatepicker]="picker3" placeholder="Dia final" (dateChange)="selectFechaFinal(picker3)" style="background: #9e9e9e">
+            <mat-datepicker-toggle matSuffix [for]="picker3"></mat-datepicker-toggle>
+            <mat-datepicker #picker3 startView="year"  ></mat-datepicker>
+          </mat-form-field>
+        </div>
+
+        <canvas baseChart width="100" height="50"
+                [datasets]="barChartData"
+                [labels]="barChartLabels"
+                [options]="barChartOptions"
+                [colors]="barChartColors"
+                [legend]="barChartLegend"
+                [chartType]="barChartType"
+                (chartHover)="chartHovered($event)">
+        </canvas>
+      </div>
+      <!--------------------------------------------------------------------------------------------------------------------->
+      <div *ngIf="selected == '4'">
+        <div>
+          <mat-form-field>
+            <input matInput [matDatepicker]="picker4" placeholder="Dia final" (dateChange)="selectFechaComunicacion(picker4)" style="background: #9e9e9e">
+            <mat-datepicker-toggle matSuffix [for]="picker4"></mat-datepicker-toggle>
+            <mat-datepicker #picker4 startView="year"  ></mat-datepicker>
+          </mat-form-field>
+        </div>
+        <canvas baseChart width="100" height="50"
+                [datasets]="lineChartDataC"
+                [labels]="lineChartLabelsC"
+                [options]="lineChartOptionsC"
+                [colors]="lineChartColorsC"
+                [legend]="lineChartLegendC"
+                [chartType]="lineChartTypeC"
+                (chartHover)="chartHovered($event)">
+        </canvas>
+      </div>
+      <!--------------------------------------------------------------------------------------------------------------------->
+      <div *ngIf="selected == '5'">
+        <div style="display: block" mat-dialog-actions class="mdi-4">
+          <h6 style="color: white">Bimestre Actual</h6>
+          <canvas baseChart
+                  [datasets]="doughnutChartData1"
+                  [labels]="doughnutChartLabels1"
+                  [chartType]="doughnutChartType1"
+                  (chartHover)="chartHovered($event)">
+          </canvas><hr>
+        </div>
+        <div style="display: block" mat-dialog-actions>
+          <h6 style="color: white">Bimestre Anterior</h6>
+          <canvas baseChart
+                  [datasets]="doughnutChartData11"
+                  [labels]="doughnutChartLabels1"
+                  [chartType]="doughnutChartType1"
+                  (chartHover)="chartHovered($event)">
+          </canvas><hr>
+        </div>
+
+        <div style="display: block" mat-dialog-actions>
+          <h6 style="color: white">Total Consumo</h6>
+          <canvas baseChart
+                  [datasets]="doughnutChartData3BC"
+                  [labels]="doughnutChartLabels"
+                  [chartType]="doughnutChartType"
+                  (chartHover)="chartHovered($event)">
+          </canvas>
+        </div>
+      </div>
+    </div>
+  </div>
