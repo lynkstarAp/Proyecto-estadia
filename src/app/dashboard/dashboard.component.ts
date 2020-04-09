@@ -19,6 +19,7 @@ import {MatTableDataSource} from "@angular/material/table";
 import {Comunicacion} from "../models/Comunicacion";
 import {ComunicacionService} from "../services/comunicacion.service";
 import {ConsumoService} from "../services/consumo.service";
+import {LoginService} from "../services/login.service";
 //----------------------------------------------------------------------------------------------------------------------
 
 
@@ -53,7 +54,8 @@ export class DashboardComponent {
     public menuItems: MenuItems,
     public dialog: MatDialog,
     public medidorService: MeterService,
-    public colectorService: ColectorService
+    public colectorService: ColectorService,
+    public loginService: LoginService
   ) {
     this.mobileQuery = media.matchMedia('(min-width: 768px)');
     this._mobileQueryListener = () => changeDetectorRef.detectChanges();
@@ -61,9 +63,16 @@ export class DashboardComponent {
     // this.selectMeter();
     this.selectColector();
 
-
+this.iniciarSesion();
   }
 
+  iniciarSesion(){
+    this.loginService.login('gaby','gabi123').subscribe(
+      (response) => {
+        console.log(response);
+      }
+    );
+  }
 
   styles = [
     {

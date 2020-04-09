@@ -11,11 +11,15 @@ import {ChartEvent} from "ng-chartist";
 import {MatTableDataSource} from "@angular/material/table";
 import {MatPaginator} from "@angular/material/paginator";
 import {MatSort} from "@angular/material/sort";
-import {Medidor, MedidorUsu} from "../../models/Medidor";
+import {Medidor, MedidorConsumos, MedidorInstantaneo, MedidorUsu} from "../../models/Medidor";
 import {UsuarioService} from "../../services/usuario.service";
 import {Usuarios} from "../../models/Usuario";
 import {Router} from "@angular/router";
 import {MeterService} from "../../services/meter.service";
+import {MedidorServiceService} from "../../service/medidor-service.service";
+import {ConsumoService} from "../../services/consumo.service";
+import {Comunicacion} from "../../models/Comunicacion";
+import {ComunicacionService} from "../../services/comunicacion.service";
 
 export interface Chart {
   type: ChartType;
@@ -49,6 +53,44 @@ const FECHAS: string[] = [
 ];
 
 let macMed ;
+let medidorSeleccionado1: Medidor;
+
+let dataInstantaneaVol: number[] = [];
+let dataInstantaneoHr: string[] = [];
+let dataInstantaneoCor: number[] = [];
+
+let dataPerdidaDada: number = 0;
+let dataPerdidaGen: number = 0;
+let dataPerdidaCons: number = 0;
+let dataPerdidaDadaT: number = 0;
+let dataPerdidaGenT: number = 0;
+let dataPerdidaConsT: number = 10;
+let dataPerdidaTSuma: number[] = [];
+let dataPerdidaT: number[] = [];
+
+let fechaInicial: string = "";
+let fechaFinal: string = "";
+
+let datosPerfil: number[] = [];
+let fechaPerfil: string[] = [];
+
+let comunicacionEnviados: number[] = [];
+let comunicacionPerdidos: number[] = [];
+let comunicacionFecha: string[] = [];
+
+let consumosEntregadaAcutal: number = 0;
+let consumosEntregadaPasado: number = 0;
+let consumosEntregadaTotal: number = 0;
+let consumosRecibidaAcutal: number = 0;
+let consumosRecibidaPasado: number = 0;
+let consumosRecibidaTotal: number = 0;
+let consumosNeteoAcutal: number = 0;
+let consumosNeteoPasado: number = 0;
+let consumosNeteoTotal: number = 0;
+
+let consumosActualT: number[] = [];
+let consumosAnteriorT: number[] = [];
+let consumosTotales: number[] = [];
 //----------------------------------------------------------------------------------------------------------------------
 
 @Component({
@@ -191,8 +233,9 @@ export class AdminMedidorComponent implements OnInit {
   this.medidorServiceService.selectOneMeter({'mac':mac}).subscribe(
     (meterFromApi: Medidor) => {
       this.medidorSeleccionado = meterFromApi;
-      console.log(this.medidorSeleccionado.num_serie);
+      // console.log(this.medidorSeleccionado.num_serie);
       num_serie = this.medidorSeleccionado.num_serie;
+      medidorSeleccionado1 = meterFromApi;
 
     }
   );
@@ -207,19 +250,25 @@ let num_serie;
 })
 
 export class ModalM {
+  medidor: MedidorConsumos;
+  mac: string;
+  nuSerie: number;
+  necteo: number;
+  relevador: number;
 
   selected = '';
 
+  final = 0;
+
   public lineChartData: ChartDataSets[] = [
-    {data: [65, 59, 80, 81, 56, 55, 40, 34, 56, 79, 12, 23], label: 'Voltaje'}
+    {data: dataInstantaneaVol, label: 'Voltaje'}
   ];
 
   public lineChartData2: ChartDataSets[] = [
-    {data: [28, 48, 40, 19, 86, 27, 90, 45, 67, 12, 10, 12], label: 'Corriente'}
+    {data: dataInstantaneoCor, label: 'Corriente'}
   ];
 
-  public lineChartLabels: Label[] = ['00:00:00', '01:00:00', '02:00:00', '03:00:00', '04:00:00', '05:00:00', '06:00:00',
-    '07:00:00', '08:00:00', '09:00:00', '10:00:00', '11:00:00'];
+  public lineChartLabels: Label[] = dataInstantaneoHr;
 
   public lineChartOptions: (ChartOptions & { annotation: any }) = {
     responsive: true,
@@ -297,24 +346,167 @@ export class ModalM {
   }
 
   constructor(public dialogRef: MatDialogRef<Modal>,
-              @Inject(MAT_DIALOG_DATA) public data: any) {
+              @Inject(MAT_DIALOG_DATA) public data: any,
+              public medidorService: MeterService,
+              public consumosService: ConsumoService,
+              public comunicacionService: ComunicacionService,) {
+    this.selectMeterInfor();
   }
 
   onNoClick(): void {
     this.dialogRef.close();
   }
 
+  selectMeterInfor(){
+    console.log("mac: " + this.macMed2);
+    this.medidorService.selectOneMeter({'mac': this.macMed2} ).subscribe((meterFromApi: MedidorConsumos) => {
+      console.log(meterFromApi);
+      this.medidor = meterFromApi;
+      this.mac = this.medidor['mac'];
+      this.nuSerie = this.medidor['num_serie'];
+      this.necteo = this.medidor['energia_necta_actual'];
+      this.relevador = this.medidor['estado_relevador'];
+    });
+    // console.log(this.medidorSeleccionado2);
+  }
+
+  selectFechaInsta(myDatepicker) {
+    dataInstantaneaVol.length = 0;
+    dataInstantaneoHr.length = 0;
+    dataInstantaneoCor.length = 0;
+    let temp: string = "";
+    temp = String(myDatepicker.startAt);
+    let x = temp.split(" ");
+    // console.log(x);
+    if (x[1] === 'Jan') {
+      x[1] = '01';
+    }
+    if (x[1] === 'Feb') {
+      x[1] = '02';
+    }
+    if (x[1] === 'Mar') {
+      x[1] = '03';
+    }
+    if (x[1] === 'Apr') {
+      x[1] = '04';
+    }
+    if (x[1] === 'May') {
+      x[1] = '05';
+    }
+    if (x[1] === 'Jun') {
+      x[1] = '06';
+    }
+    if (x[1] === 'Jul') {
+      x[1] = '07';
+    }
+    if (x[1] === 'Aug') {
+      x[1] = '08';
+    }
+    if (x[1] === 'Sep') {
+      x[1] = '09';
+    }
+    if (x[1] === 'Oct') {
+      x[1] = '10';
+    }
+    if (x[1] === 'Nov') {
+      x[1] = '11';
+    }
+    if (x[1] === 'Dec') {
+      x[1] = '12';
+    }
+    if (x[2].length == 1) {
+      x[2] = '0' + x[2];
+    }
+
+    temp = x[3] + "-" + x[1] + "-" + x[2];
+    // console.log(temp);
+
+    if (this.nuSerie != null) {
+      this.selectInsta(temp);
+    }
+  }
+  selectInsta(fecha) {
+    let medidorIntenataneo: MedidorInstantaneo = null;
+    this.medidorService.selectInstaMeter({"mac": this.mac, "fecha": fecha}).subscribe(
+      (meterFromTheApi: MedidorInstantaneo) => {
+        // @ts-ignore
+        if (meterFromTheApi != null) {
+          medidorIntenataneo = meterFromTheApi;
+          // @ts-ignore
+          for (let i of medidorIntenataneo) {
+            dataInstantaneaVol.push(i['voltaje']);
+            let fechaHoraIns = String(i['fecha_hora']);
+            let temp = fechaHoraIns.split(" ");
+            dataInstantaneoHr.push(temp[1]);
+            dataInstantaneoCor.push(i['corriente']);
+            // console.log(i + ' /// ' + dataInstantaneaVol + ' /// ' + dataInstantaneoHr + ' /// ' + dataInstantaneoCor);
+          }
+          // console.log(meterFromTheApi );
+        }
+      }, (err: any) => {
+        console.error(err);
+      }
+    );
+
+  }
 //-------------------------------------GRAFICA DE PERDIDAS DE ENERGIA---------------------------------------------------
   public doughnutChartLabels: Label[] = ['Área', 'Testigo', 'Perdidas'];
-  public doughnutChartData: MultiDataSet = [
-    [350, 450, 100]
+  public doughnutChartData: ChartDataSets[] = [
+    {data: dataPerdidaT, label: 'Corriente'}
   ];
 
-  public doughnutChartData2: MultiDataSet = [
-    [134, 489, 300]
+  public doughnutChartData2: ChartDataSets[] = [
+    {data: dataPerdidaTSuma}
   ];
 
   public doughnutChartType: ChartType = 'doughnut';
+
+  selectLostEnergi() {
+      this.selectLostEnergyMeter();
+  }
+
+  selectLostEnergyMeter() {
+    dataPerdidaTSuma.length = 0;
+    dataPerdidaT.length = 0;
+    dataPerdidaGenT = 0;
+    dataPerdidaDadaT = 0;
+    dataPerdidaConsT = 0;
+    let medidorIntenataneo: MedidorInstantaneo = null;
+    this.medidorService.selectInstaMeter({'mac': this.mac, "fecha": '20'}).subscribe(
+      (meterFromTheApi: MedidorInstantaneo) => {
+        // @ts-ignore
+        if (meterFromTheApi != null) {
+          medidorIntenataneo = meterFromTheApi;
+          let cons = 0;
+          // @ts-ignore
+          for (let i of medidorIntenataneo) {
+            if (cons == 0) {
+              dataPerdidaGen = i['energia_reactiva'];
+              dataPerdidaDada = i['energia_aparente'];
+              dataPerdidaCons = i['energia_activa'];
+            }
+            dataPerdidaGenT += i['energia_reactiva'];
+            dataPerdidaDadaT = dataPerdidaDadaT + i['energia_aparente'];
+            dataPerdidaConsT += i['energia_activa'];
+
+            // console.log(' /// ' + dataPerdidaGenT + ' /// ' + dataPerdidaDadaT + ' /// ' + dataPerdidaConsT);
+            this.final = dataPerdidaDadaT;
+            cons = cons + 1;
+          }
+          dataPerdidaTSuma.push(dataPerdidaGenT);
+          dataPerdidaTSuma.push(dataPerdidaDadaT);
+          dataPerdidaTSuma.push(dataPerdidaConsT);
+          dataPerdidaT.push(dataPerdidaGen);
+          dataPerdidaT.push(dataPerdidaDada);
+          dataPerdidaT.push(dataPerdidaCons);
+          // console.log(meterFromTheApi );
+        }
+      }, (err: any) => {
+        console.error(err);
+      }
+    );
+  }
+
 //-------------------------------------GRAFICA DE PERFILES--------------------------------------------------------------
   public barChartOptions: ChartOptions = {
     responsive: true,
@@ -334,21 +526,163 @@ export class ModalM {
     }
   ];
 
-  public barChartLabels: Label[] = ['04:45', '05:30', '06:15', '07:00', '07:45', '08:30', '09:15', '10:00', '10:45', '11:30'];
+  public barChartLabels: Label[] = fechaPerfil;
   public barChartType: ChartType = 'bar';
   public barChartLegend = true;
 
   public barChartData: ChartDataSets[] = [
-    {data: [65, 59, 80, 81, 56, 55, 40, 34, 67, 56], label: 'Kwh'}
-  ];
-//-------------------------------------GRAFICA DE COMUNICACIONES--------------------------------------------------------
-  public lineChartDataC: ChartDataSets[] = [
-    {data: [16, 17, 26, 35, 22, 11, 29, 23, 18, 33, 30, 27], label: 'Paquetes Enviados'},
-    {data: [10, 11, 20, 29, 26, 5, 23, 17, 12, 27, 24, 21], label: 'Paquetes Perdidos'}
+    {data: datosPerfil, label: 'Kwh'}
   ];
 
-  public lineChartLabelsC: Label[] = ['00:00:00', '01:00:00', '02:10:00', '04:00:00', '05:00:00', '06:00:00', '07:05:00',
-    '08:05:00', '09:50:00', '10:050:00', '11:50:00', '14:35:00'];
+  selectFechaInicial(picker) {
+    let temp: string = "";
+    temp = String(picker.startAt);
+    let x = temp.split(" ");
+    // console.log(x);
+    if (x[1] === 'Jan') {
+      x[1] = '01';
+    }
+    if (x[1] === 'Feb') {
+      x[1] = '02';
+    }
+    if (x[1] === 'Mar') {
+      x[1] = '03';
+    }
+    if (x[1] === 'Apr') {
+      x[1] = '04';
+    }
+    if (x[1] === 'May') {
+      x[1] = '05';
+    }
+    if (x[1] === 'Jun') {
+      x[1] = '06';
+    }
+    if (x[1] === 'Jul') {
+      x[1] = '07';
+    }
+    if (x[1] === 'Aug') {
+      x[1] = '08';
+    }
+    if (x[1] === 'Sep') {
+      x[1] = '09';
+    }
+    if (x[1] === 'Oct') {
+      x[1] = '10';
+    }
+    if (x[1] === 'Nov') {
+      x[1] = '11';
+    }
+    if (x[1] === 'Dec') {
+      x[1] = '12';
+    }
+    if (x[2].length == 1) {
+      x[2] = '0' + x[2];
+    }
+
+    temp = x[3] + "-" + x[1] + "-" + x[2];
+    fechaInicial = temp;
+
+    if (this.nuSerie != null) {
+      this.selectPerfil()
+    } else {
+    }
+  }
+
+  selectFechaFinal(picker) {
+    let temp: string = "";
+    temp = String(picker.startAt);
+    let x = temp.split(" ");
+    // console.log(x);
+    if (x[1] === 'Jan') {
+      x[1] = '01';
+    }
+    if (x[1] === 'Feb') {
+      x[1] = '02';
+    }
+    if (x[1] === 'Mar') {
+      x[1] = '03';
+    }
+    if (x[1] === 'Apr') {
+      x[1] = '04';
+    }
+    if (x[1] === 'May') {
+      x[1] = '05';
+    }
+    if (x[1] === 'Jun') {
+      x[1] = '06';
+    }
+    if (x[1] === 'Jul') {
+      x[1] = '07';
+    }
+    if (x[1] === 'Aug') {
+      x[1] = '08';
+    }
+    if (x[1] === 'Sep') {
+      x[1] = '09';
+    }
+    if (x[1] === 'Oct') {
+      x[1] = '10';
+    }
+    if (x[1] === 'Nov') {
+      x[1] = '11';
+    }
+    if (x[1] === 'Dec') {
+      x[1] = '12';
+    }
+    if (x[2].length == 1) {
+      x[2] = '0' + x[2];
+    }
+
+    temp = x[3] + "-" + x[1] + "-" + x[2];
+    fechaFinal = temp;
+    if (this.nuSerie != null) {
+      this.selectPerfil();
+    }
+  }
+
+  selectPerfil() {
+    let medidorIntenataneo: MedidorInstantaneo = null;
+    console.log("1: " + fechaInicial + " 2: " + fechaFinal);
+    if (fechaInicial.length < 10 && fechaFinal.length < 10) {
+      return null;
+    } else if (fechaInicial.length == 10 && fechaFinal.length == 10) {
+      datosPerfil.length = 0;
+      fechaPerfil.length = 0;
+
+      this.medidorService.selectPerfil(this.mac, fechaInicial, fechaFinal, {
+        "fecha1": fechaInicial,
+        "fecha2": fechaFinal,
+        "mac1": this.mac
+      }).subscribe(
+        (meterFromTheApi: MedidorInstantaneo) => {
+          // @ts-ignore
+          if (meterFromTheApi != null) {
+            medidorIntenataneo = meterFromTheApi;
+            // @ts-ignore
+            for (let i of medidorIntenataneo) {
+              datosPerfil.push(i['energia_activa']);
+              let fechaHoraIns = String(i['fecha_hora']);
+              let temp = fechaHoraIns.split(" ");
+              fechaPerfil.push(temp[1]);
+              // console.log(i + ' /// ' + dataInstantaneaVol + ' /// ' + dataInstantaneoHr + ' /// ' + dataInstantaneoCor);
+            }
+            // console.log(meterFromTheApi );
+          }
+        }, (err: any) => {
+          console.error(err);
+        }
+      );
+      console.log(datosPerfil);
+      console.log(fechaPerfil);
+    }
+  }
+//-------------------------------------GRAFICA DE COMUNICACIONES--------------------------------------------------------
+  public lineChartDataC: ChartDataSets[] = [
+    {data: comunicacionEnviados, label: 'Paquetes Enviados'},
+    {data: comunicacionPerdidos, label: 'Paquetes Perdidos'}
+  ];
+
+  public lineChartLabelsC: Label[] = comunicacionFecha;
 
   public lineChartOptionsC: (ChartOptions & { annotation: any }) = {
     responsive: true,
@@ -413,23 +747,149 @@ export class ModalM {
   public lineChartLegendC = true;
   public lineChartTypeC = 'line';
 
+  selectFechaComunicacion(picker) {
+    let temp: string = "";
+    temp = String(picker.startAt);
+    let x = temp.split(" ");
+    // console.log(x);
+    if (x[1] === 'Jan') {
+      x[1] = '01';
+    }
+    if (x[1] === 'Feb') {
+      x[1] = '02';
+    }
+    if (x[1] === 'Mar') {
+      x[1] = '03';
+    }
+    if (x[1] === 'Apr') {
+      x[1] = '04';
+    }
+    if (x[1] === 'May') {
+      x[1] = '05';
+    }
+    if (x[1] === 'Jun') {
+      x[1] = '06';
+    }
+    if (x[1] === 'Jul') {
+      x[1] = '07';
+    }
+    if (x[1] === 'Aug') {
+      x[1] = '08';
+    }
+    if (x[1] === 'Sep') {
+      x[1] = '09';
+    }
+    if (x[1] === 'Oct') {
+      x[1] = '10';
+    }
+    if (x[1] === 'Nov') {
+      x[1] = '11';
+    }
+    if (x[1] === 'Dec') {
+      x[1] = '12';
+    }
+    if (x[2].length == 1) {
+      x[2] = '0' + x[2];
+    }
+
+    temp = x[3] + "-" + x[1] + "-" + x[2];
+    fechaFinal = temp;
+
+    this.selectComunicacion(temp);
+  }
+  selectComunicacion(fecha) {
+
+    comunicacionEnviados.length = 0;
+    comunicacionPerdidos.length = 0;
+    comunicacionFecha.length = 0;
+    console.log("1: " + fechaInicial + " 2: " + fechaFinal);
+    this.comunicacionService.selectComunicacionMedidor({"mac": this.mac, "fecha": fecha}).subscribe(
+      (comunicacionFromTheApi: Comunicacion) => {
+        // @ts-ignore
+        if (comunicacionFromTheApi != null) {
+          // @ts-ignore
+          for (let i of comunicacionFromTheApi) {
+            comunicacionEnviados.push(i['paquetes_env']);
+            comunicacionPerdidos.push(i['paquetes_perd']);
+            let fechaHoraIns = String(i['fecha_hora']);
+            let hora = fechaHoraIns.split(" ");
+            comunicacionFecha.push(hora[1]);
+
+            // console.log(i + ' /// ' + dataInstantaneaVol + ' /// ' + dataInstantaneoHr + ' /// ' + dataInstantaneoCor);
+          }
+          // console.log(meterFromTheApi );
+        }
+      }, (err: any) => {
+        console.error(err);
+      }
+    );
+    console.log(datosPerfil);
+    console.log(fechaPerfil);
+
+  }
 //-------------------------------------GRAFICA DE BALANCES DE CONSUMO---------------------------------------------------
 
   public doughnutChartLabelsBC: Label[] = ['Balance', 'Entregada', 'Recibida'];
-  public doughnutChartDataBC: MultiDataSet = [
-    [350, 450, 100]
+  public doughnutChartData1: ChartDataSets[] = [
+    {data: consumosActualT, label: 'Corriente'}
   ];
 
-  public doughnutChartData2BC: MultiDataSet = [
-    [134, 489, 300]
+  public doughnutChartData11: ChartDataSets[] = [
+    {data: consumosAnteriorT}
   ];
 
-  public doughnutChartData3BC: MultiDataSet = [
-    [239, 239, 239]
+  public doughnutChartData3BC: ChartDataSets[] = [
+    {data: consumosTotales}
   ];
 
   public doughnutChartTypeBC: ChartType = 'doughnut';
+
+  selectConsumosMed() {
+    consumosActualT.length = 0;
+    consumosAnteriorT.length = 0;
+    consumosTotales.length = 0;
+
+    this.consumosService.selectConsumoMedidor(this.mac).subscribe(
+      (consumosFromTheApi: MedidorConsumos) => {
+        // @ts-ignore
+        if (consumosFromTheApi != null) {
+          // @ts-ignore
+          for (let n of consumosFromTheApi) {
+            consumosEntregadaAcutal = n['energia_entregada_actual'];
+            consumosEntregadaPasado = n['energia_entregada_anterior'];
+            consumosEntregadaTotal = n['energia_entregada_total'];
+            consumosRecibidaAcutal = n['energia_recibida_actual'];
+            consumosRecibidaPasado = n['energia_recibida_anterior'];
+            consumosRecibidaTotal = n['energia_recibida_total'];
+            consumosNeteoAcutal = n['energia_necta_actual'];
+            consumosNeteoPasado = n['energia_necta_anterior'];
+            consumosNeteoTotal = n['energia_necta_total'];
+            console.log(consumosEntregadaAcutal + " " + consumosRecibidaAcutal + " " + consumosNeteoAcutal);
+            consumosActualT.push(n['energia_entregada_actual']);
+            consumosActualT.push(n['energia_recibida_actual']);
+            consumosActualT.push(n['energia_necta_actual']);
+
+            consumosAnteriorT.push(n['energia_entregada_anterior']);
+            consumosAnteriorT.push(n['energia_recibida_anterior']);
+            consumosAnteriorT.push(n['energia_necta_anterior']);
+
+            consumosTotales.push(n['energia_entregada_total']);
+            consumosTotales.push(n['energia_recibida_total']);
+            consumosTotales.push(n['energia_necta_total']);
+
+          }
+        }
+      }, (err: any) => {
+        console.error(err);
+      }
+    );
+    // console.log(consumosActualT);
+  }
+
+
   num_serie2: string;
   macMed2 = macMed;
+  medidorSeleccionado2 = medidorSeleccionado1;
+
 
 }

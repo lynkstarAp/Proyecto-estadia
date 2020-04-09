@@ -14,9 +14,10 @@ export class ConsumoService {
 
   selectConsumoMedidor(mac): Observable<MedidorConsumos> {
     const options = {params: new HttpParams().set('mac', mac) };
-    let headers = new HttpHeaders().set('token', 'aovTUgvSrQQbDzOdHpLIvkvfRlN38WLlHGTeblT9beWk7RdFcv37XYJ1LYHc');
+    let headers = new HttpHeaders();
+    headers = headers.append('token','aovTUgvSrQQbDzOdHpLIvkvfRlN38WLlHGTeblT9beWk7RdFcv37XYJ1LYHc');
     // @ts-ignore
-    return this._http.get( this.baseURL+'consumos-medidor', options );
+    return this._http.post( this.baseURL+'consumos-medidor', {'mac': mac}, {headers} );
 
   }
 }

@@ -5,21 +5,24 @@
 <div mat-dialog-title  class="flex-container">
   <div class="flex-item">
     <div style="display: block" mat-dialog-actions>
-      <h6 style="color: white">N° de Serie: {{macMed2}}</h6>
-      <h6 style="color: white">Estado del relevador:</h6>
-      <h6 style="color: white">Neteo Energía:</h6>
+      <h6 style="color: white">N° de Serie: {{mac}}</h6>
+      <h6 style="color: white">Estado del relevador: <h6 *ngIf="relevador == 1"> ACTIVADO</h6>  <h6 *ngIf="relevador == 0"> DESACTIVADO</h6></h6>
+      <h6 style="color: white">Neteo Energía: {{nuSerie}}</h6>
 
       <mat-select style="height: 45px" class="form-control" [(value)]="selected">
         <mat-option value="1" selected> Instántaneos </mat-option>
-        <mat-option value="2"> Pérdidas de Energía </mat-option>
+        <mat-option value="2" (onSelectionChange)="selectLostEnergi()"> Pérdidas de Energía </mat-option>
         <mat-option value="3"> Perfiles </mat-option>
         <mat-option value="4"> Comunicaciones </mat-option>
-        <mat-option value="5"> Balance de Consumos </mat-option>
+        <mat-option value="5" (selectstart)="selectConsumosMed()"> Balance de Consumos </mat-option>
       </mat-select><br>
       <!--------------------------------------------------------------------------------------------------------------------->
       <div *ngIf=" selected == '1' " >
-        <h6>Selecciona un día</h6>
-        <input type="date" style="height: 40px; width: 13vmax; background: #212121" class="form-control"/>
+        <mat-form-field>
+          <input matInput [matDatepicker]="picker" placeholder="Selecciona una fecha" (dateChange)="selectFechaInsta(picker)" style="background: #9e9e9e">
+          <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+          <mat-datepicker #picker startView="year"  ></mat-datepicker>
+        </mat-form-field>
         <canvas baseChart width="70" height="50"
                 [datasets]="lineChartData"
                 [labels]="lineChartLabels"
@@ -43,13 +46,13 @@
       <!--------------------------------------------------------------------------------------------------------------------->
       <div *ngIf="selected == '2'">
         <canvas baseChart width="100" height="50"
-                [data]="doughnutChartData"
+                [datasets]="doughnutChartData"
                 [labels]="doughnutChartLabels"
                 [chartType]="doughnutChartType"
                 (chartHover)="chartHovered($event)">
         </canvas><hr>
         <canvas baseChart width="100" height="50"
-                [data]="doughnutChartData2"
+                [datasets]="doughnutChartData2"
                 [labels]="doughnutChartLabels"
                 [chartType]="doughnutChartType"
                 (chartHover)="chartHovered($event)">
@@ -57,12 +60,21 @@
       </div>
       <!--------------------------------------------------------------------------------------------------------------------->
       <div *ngIf="selected == '3' ">
-        <form>
-          <h6 style="color: white">Día Inicial</h6>
-          <input type="date" style="height: 40px; width: 13vmax; background: #212121" class="form-control"/>
-          <h6 style="color: white">Día Final</h6>
-          <input type="date" style="height: 40px; width: 13vmax; background: #212121" class="form-control"/>
-        </form>
+        <div>
+          <mat-form-field>
+            <input matInput [matDatepicker]="picker2" placeholder="Dia inicial" (dateChange)="selectFechaInicial(picker2)" style="background: #9e9e9e">
+            <mat-datepicker-toggle matSuffix [for]="picker2"></mat-datepicker-toggle>
+            <mat-datepicker #picker2 startView="year"  ></mat-datepicker>
+          </mat-form-field>
+        </div>
+
+        <div>
+          <mat-form-field>
+            <input matInput [matDatepicker]="picker3" placeholder="Dia final" (dateChange)="selectFechaFinal(picker3)" style="background: #9e9e9e">
+            <mat-datepicker-toggle matSuffix [for]="picker3"></mat-datepicker-toggle>
+            <mat-datepicker #picker3 startView="year"  ></mat-datepicker>
+          </mat-form-field>
+        </div>
 
         <canvas baseChart width="100" height="50"
                 [datasets]="barChartData"
@@ -77,7 +89,13 @@
       <!--------------------------------------------------------------------------------------------------------------------->
       <div *ngIf="selected == '4'">
         <h6>Selecciona un día</h6>
-        <input type="date" style="height: 40px; width: 13vmax; background: #212121" class="form-control"/>
+        <div>
+          <mat-form-field>
+            <input matInput [matDatepicker]="picker4" placeholder="Dia final" (dateChange)="selectFechaComunicacion(picker4)" style="background: #9e9e9e">
+            <mat-datepicker-toggle matSuffix [for]="picker4"></mat-datepicker-toggle>
+            <mat-datepicker #picker4 startView="year"  ></mat-datepicker>
+          </mat-form-field>
+        </div>
         <canvas baseChart width="100" height="50"
                 [datasets]="lineChartDataC"
                 [labels]="lineChartLabelsC"
@@ -93,7 +111,7 @@
         <div style="display: block" mat-dialog-actions class="mdi-4">
           <h6 style="color: white">Bimestre Actual</h6>
           <canvas baseChart
-                  [data]="doughnutChartDataBC"
+                  [datasets]="doughnutChartData1"
                   [labels]="doughnutChartLabels"
                   [chartType]="doughnutChartType"
                   (chartHover)="chartHovered($event)">
@@ -102,7 +120,7 @@
         <div style="display: block" mat-dialog-actions>
           <h6 style="color: white">Bimestre Anterior</h6>
           <canvas baseChart
-                  [data]="doughnutChartData2BC"
+                  [datasets]="doughnutChartData11"
                   [labels]="doughnutChartLabelsBC"
                   [chartType]="doughnutChartType"
                   (chartHover)="chartHovered($event)">
@@ -112,7 +130,7 @@
         <div style="display: block" mat-dialog-actions>
           <h6 style="color: white">Total Consumo</h6>
           <canvas baseChart
-                  [data]="doughnutChartData3BC"
+                  [datasets]="doughnutChartData3BC"
                   [labels]="doughnutChartLabels"
                   [chartType]="doughnutChartTypeBC"
                   (chartHover)="chartHovered($event)">
