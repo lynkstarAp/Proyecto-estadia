@@ -5,24 +5,30 @@
 <!-- column -->
 <div fxLayout="row wrap" class="table table-responsive table-bordered table-hover table-striped">
   <!-- column -->
-  <div fxFlex.gt-xl="50" fxFlex.gt-md="33"  fxFlex.gt-xs="100" fxFlex="100" >
+  <div fxFlex.gt-xl="50" fxFlex.gt-md="33" fxFlex.gt-xs="100" fxFlex="100">
 
     <!-- Card column -->
-    <div fxFlex.gt-sm="100" fxFlex="100" >
+    <div fxFlex.gt-sm="100" fxFlex="100">
       <mat-card style="width: 295%" class="table-responsive">
-          <mat-card-content>
-            <mat-card-title style="text-align: center!important;">Colectores</mat-card-title>
-          </mat-card-content>
-          <mat-tab-group>
-            <div style="text-align: center!important;" class="col-sm-12 col-xl-12 col-md-12">
-              //----------------------------------------------------------------------------------------------------------------------
-              <mat-tab label="Formato bloque" class="col-sm-12 col-xl-12 col-md-12" >
-                <mat-card-content class="col-sm-12 col-md-12 col-xl-12 row" style="height:80vh;width:100vw; ">
+        <mat-card-content>
+          <mat-card-title style="text-align: center!important;">Colectores</mat-card-title>
+        </mat-card-content>
+        <mat-tab-group>
+          <div style="text-align: center!important;" class="col-sm-12 col-xl-12 col-md-12">
+            //----------------------------------------------------------------------------------------------------------------------
+            <mat-tab label="Formato bloque" class="col-sm-12 col-xl-12 col-md-12">
+              <mat-card-content class="col-sm-12 col-md-12 col-xl-12 row" style="height:80vh;width:100vw; ">
 
-                <div fxFlex.gt-lg="33" fxFlex.gt-md="33" fxFlex.gt-xs="100" fxFlex="x100" *ngFor="let col of colectorCons" style="height:50vh;width:100vw; margin-top: 20px; text-align: center; lign-content: center; " >
-                  <div class="col-sm-12 col-xl-12 col-md-12" style="text-align: center; align-content: center; "  >
-                    <mat-card-content style="background-color: #212121; border: 4px #120000 groove; " class="col-sm-12 col-xl-12 col-md-12">
-                      <img src="assets/images/users/protcomm_i_max2.png" style="width: 65%">
+                <div fxFlex.gt-lg="33" fxFlex.gt-md="33" fxFlex.gt-xs="100" fxFlex="x100"
+                     *ngFor="let col of colectorCons"
+                     style="height:50vh;width:100vw; margin-top: 20px; text-align: center; lign-content: center; padding: 20px "
+                     class="col-sm-12 col-xl-12 col-md-12">
+                  <div class="col-sm-12 col-xl-12 col-md-12" style="text-align: center; align-content: center; ">
+                    <mat-card-content style="background-color: #212121; border: 4px #120000 groove; "
+                                      class="col-sm-12 col-xl-12 col-md-12"
+                                      fxFlex.gt-xl="100" fxFlex.gt-md="100"  fxFlex.gt-xs="40" fxFlex="100">
+
+                      <img src="assets/images/users/protcomm_i_max2.png" style="width: 65%" >
                       <mat-card-title>Colector {{col.nombre}}</mat-card-title>
 
                       <div class="row">
@@ -38,72 +44,73 @@
                               Neteo Energía: {{col.energia_necteo}}
                             </h6>
                           </div>
-<!--                          <ul class="list-inline text-center">-->
-<!--                            <li>-->
-<!--                              <h6 class="text-success m-0">-->
-<!--                                <i class="mdi mdi-checkbox-blank-circle font-10 m-r-10 "></i>Mac: <br>{{col.mac}}</h6><br>-->
-<!--                              <h6 class="text-success m-0"><i class="mdi mdi-checkbox-blank-circle font-10 m-r-10 "></i>Estado Relevador: <br>{{col.estado_relevador}}</h6><br>-->
-<!--                              <h6 class="text-success m-0"><i class="mdi mdi-checkbox-blank-circle font-10 m-r-10 "></i>Neteo Energía: <br>{{col.energia_necteo}}</h6>-->
-<!--                            </li>-->
-<!--                          </ul>-->
                         </div>
                       </div>
                     </mat-card-content>
                   </div>
 
-                  <hr><br>
+                  <hr>
+                  <br>
                 </div>
 
               </mat-card-content>
-              </mat-tab>
-              <!------------------------------------------------------------------------------------------------------------------------>
+            </mat-tab>
+            <!------------------------------------------------------------------------------------------------------------------------>
 
-              <mat-tab label="Formato Tabla">
-                <mat-card-content>
-                  <div class="mat-elevation-z8 table table-responsive table-borderless table-hover table-striped">
-                    <table mat-table [dataSource]="dataSource" matSort class="table">
+            <mat-tab label="Formato Tabla">
+              <mat-card-content>
+                <div class="mat-elevation-z8 table table-responsive table-borderless table-hover table-striped">
+                  <table mat-table [dataSource]="dataSource" matSort class="table">
 
-                      <!-- ID Column -->
-                      <ng-container matColumnDef="id">
-                        <th mat-header-cell *matHeaderCellDef mat-sort-header  style="width: 1%"> # </th>
-                        <td mat-cell *matCellDef="let row" style="text-align: center;"  style="width: 1%"> {{row.id_concentrador}} </td>
-                      </ng-container>
+                    <!-- ID Column -->
+                    <ng-container matColumnDef="id">
+                      <th mat-header-cell *matHeaderCellDef mat-sort-header style="width: 1%"> #</th>
+                      <td mat-cell *matCellDef="let row" style="text-align: center;"
+                          style="width: 1%"> {{row.id_concentrador}} </td>
+                    </ng-container>
 
-                      <!-- Name Column -->
-                      <ng-container matColumnDef="colector">
-                        <th mat-header-cell *matHeaderCellDef mat-sort-header> Colectores </th>
-                        <td mat-cell *matCellDef="let row" style="text-align: center"> {{row.nombre}} </td>
-                      </ng-container>
-
-
-                      <!-- Color Column -->
-                      <ng-container matColumnDef="estado">
-                        <th mat-header-cell *matHeaderCellDef mat-sort-header> Estado de Relevador </th>
-                        <td mat-cell *matCellDef="let row" [style.estado]="row.estado_relevador" style="text-align: center"> {{row.estado_relevador}} </td>
-                      </ng-container>
-
-                      <ng-container matColumnDef="neteo">
-                        <th mat-header-cell *matHeaderCellDef mat-sort-header> Neteo</th>
-                        <td mat-cell *matCellDef="let row" style="text-align: center"> {{row.energia_necteo}} </td>
-                      </ng-container>
+                    <!-- Name Column -->
+                    <ng-container matColumnDef="colector">
+                      <th mat-header-cell *matHeaderCellDef mat-sort-header> Colectores</th>
+                      <td mat-cell *matCellDef="let row" style="text-align: center"> {{row.nombre}} </td>
+                    </ng-container>
 
 
+                    <!-- Color Column -->
+                    <ng-container matColumnDef="estado">
+                      <th mat-header-cell *matHeaderCellDef mat-sort-header> Estado de Relevador</th>
+                      <td mat-cell *matCellDef="let row" style="text-align: center"> {{row.estatus}} </td>
+                    </ng-container>
 
-                      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-                      <tr mat-row *matRowDef="let row; columns: displayedColumns;">
-                      </tr>
-                    </table>
+                    <ng-container matColumnDef="neteo">
+                      <th mat-header-cell *matHeaderCellDef mat-sort-header> Neteo</th>
+                      <td mat-cell *matCellDef="let row" style="text-align: center">
+                        <div *ngIf="row.energia_necteo != null" >
+                          {{row.energia_necteo}}
+                        </div>
+                        <div *ngIf="row.energia_necteo == null" >
+                          0
+                        </div>
+                      </td>
+                    </ng-container>
 
-                    <mat-paginator style="background-color: #2d2d2d; color: #FFFFFF" [pageSizeOptions]="[5, 10, 25, 100]"></mat-paginator>
-                  </div>
-                </mat-card-content>
-              </mat-tab>
-              //----------------------------------------------------------------------------------------------------------------------
-            </div>
-          </mat-tab-group>
-        </mat-card>
-      </div>
+
+                    <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+                    <tr mat-row *matRowDef="let row; columns: displayedColumns;">
+                    </tr>
+                  </table>
+
+                  <mat-paginator style="background-color: #2d2d2d; color: #FFFFFF"
+                                 [pageSizeOptions]="[5, 10, 25, 100]"></mat-paginator>
+                </div>
+              </mat-card-content>
+            </mat-tab>
+            //----------------------------------------------------------------------------------------------------------------------
+          </div>
+        </mat-tab-group>
+      </mat-card>
     </div>
   </div>
+</div>
 
 

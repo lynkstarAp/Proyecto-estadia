@@ -20,6 +20,8 @@ import {ChartsModule} from "ng2-charts";
 import {DragDropModule} from "@angular/cdk/drag-drop";
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { NgxPaginationModule} from "ngx-pagination";
+import { LoginServices} from "./material-component/login/login.services";
+import {MaterialComponentsModule} from "./material-component/material.module";
 
 @NgModule({
   declarations: [
@@ -41,12 +43,15 @@ import { NgxPaginationModule} from "ngx-pagination";
     ChartsModule,
     DragDropModule,
     MatSlideToggleModule,
-    NgxPaginationModule
+    NgxPaginationModule,
+    MaterialComponentsModule,
   ],
+  // AppRoutes
   providers: [
+    LoginServices,
     {
       provide: LocationStrategy,
-      useClass: PathLocationStrategy
+      useClass: PathLocationStrategy,
     }
   ],
   entryComponents: [],

@@ -27,6 +27,6 @@ export interface ColectorConsumos {
   id_concentrador: number;
   nombre: string;
   mac: string;
-  estado_relevador: number;
-  energia_necteo: number;
+  estatus: string;
+  energia_necteo: { total: number };
 }

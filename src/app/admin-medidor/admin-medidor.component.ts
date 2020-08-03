@@ -1,7 +1,7 @@
 import {ChangeDetectorRef, Component, Inject, OnInit, ViewChild} from '@angular/core';
-import {Modal} from "../../dashboard/dashboard.component";
+import {Modal} from "../dashboard/dashboard.component";
 import {MediaMatcher} from "@angular/cdk/layout";
-import {MenuItems} from "../../shared/menu-items/menu-items";
+import {MenuItems} from "../shared/menu-items/menu-items";
 import {MAT_DIALOG_DATA, MatDialog, MatDialogRef} from "@angular/material/dialog";
 import {ChartDataSets, ChartOptions, ChartType} from "chart.js";
 import {BaseChartDirective, Color, Label, MultiDataSet} from "ng2-charts";
@@ -11,15 +11,15 @@ import {ChartEvent} from "ng-chartist";
 import {MatTableDataSource} from "@angular/material/table";
 import {MatPaginator} from "@angular/material/paginator";
 import {MatSort} from "@angular/material/sort";
-import {Medidor, MedidorConsumos, MedidorInstantaneo, MedidorUsu} from "../../models/Medidor";
-import {UsuarioService} from "../../services/usuario.service";
-import {Usuarios} from "../../models/Usuario";
+import {Medidor, MedidorConsumos, MedidorInstantaneo, MedidorUsu} from "../models/Medidor";
+import {UsuarioService} from "../services/usuario.service";
+import {Usuarios} from "../models/Usuario";
 import {Router} from "@angular/router";
-import {MeterService} from "../../services/meter.service";
-import {MedidorServiceService} from "../../service/medidor-service.service";
-import {ConsumoService} from "../../services/consumo.service";
-import {Comunicacion} from "../../models/Comunicacion";
-import {ComunicacionService} from "../../services/comunicacion.service";
+import {MeterService} from "../services/meter.service";
+import {MedidorServiceService} from "../service/medidor-service.service";
+import {ConsumoService} from "../services/consumo.service";
+import {Comunicacion} from "../models/Comunicacion";
+import {ComunicacionService} from "../services/comunicacion.service";
 
 export interface Chart {
   type: ChartType;
@@ -246,7 +246,7 @@ let num_serie;
 
 //----------------------------------------------------------------------------------------------------------------------
 @Component({
-  templateUrl: '../grafica-medidor/grafica-medidor.component.html'
+  templateUrl: '../material-component/grafica-medidor/grafica-medidor.component.html'
 })
 
 export class ModalM {

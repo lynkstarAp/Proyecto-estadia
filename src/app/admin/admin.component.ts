@@ -2,8 +2,8 @@ import {Component, OnInit, ViewChild} from '@angular/core';
 import {MatTableDataSource} from "@angular/material/table";
 import {MatPaginator} from "@angular/material/paginator";
 import {MatSort} from "@angular/material/sort";
-import {UsuarioService} from "../../services/usuario.service";
-import {UsuarioRe, Usuarios} from "../../models/Usuario";
+import {UsuarioService} from "../services/usuario.service";
+import {UsuarioRe, Usuarios} from "../models/Usuario";
 import {Router} from "@angular/router";
 
 
@@ -107,14 +107,14 @@ export class ButtonsComponent implements OnInit {
     if (this.nombreValidacion == true && this.apellido1Validacion == true && this.usuarioValidacion == true &&
       this.contraseniaValidacion == true && this.tipoUsu != 0) {
       // console.log( { 'nombre': this.nombre, 'apellido1': this.apellido1, 'apellido2': this.apellido2, 'usuario': this.usuario, 'contraseña': this.contrasenia, 'tipo_usuario': this.tipoUsu } );
-      this.usuarioService.agregarUsuario({
-        'nombre': this.nombre,
-        'apellido1': this.apellido1,
-        'apellido2': this.apellido2,
-        'usuario': this.usuario,
-        'contraseña': this.contrasenia,
-        'tipo_usuario': this.tipoUsu
-      }).subscribe(
+      this.usuarioService.agregarUsuario(
+        this.nombre,
+        this.apellido1,
+        this.apellido2,
+        this.usuario,
+        this.contrasenia,
+        this.tipoUsu
+      ).subscribe(
         (userFomApi: UsuarioRe) => {
           if (userFomApi['error'] != null) {
             console.log(userFomApi['error']);

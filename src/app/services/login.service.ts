@@ -5,6 +5,7 @@ import {environment} from "../../environments/environment";
 import {Usuarios} from "../models/Usuario";
 import {parse} from "ts-node";
 import {stringify} from "querystring";
+import {InfoService} from "./info.service";
 
 @Injectable({
   providedIn: 'root'
@@ -15,7 +16,9 @@ export class LoginService {
 
   usuario: Usuarios;
 
-  constructor(private _http: HttpClient) { }
+  constructor(private _http: HttpClient, public info: InfoService) { }
+
+  token = this.info.getToken();
 
   login(user, pass){
     // let headers = new HttpHeaders();
@@ -25,25 +28,25 @@ export class LoginService {
       contrasena: pass
     };
     const myObjStr = JSON.stringify(json);
-
-    return this._http.post( this.baseURL + 'login', { usuario: user, contrasena: pass   } );
+// console.log(JSON.stringify(json));
+    return this._http.post( this.baseURL + 'login', JSON.stringify(json) );
   }
 
   agregarUsuario(model){
     let headers = new HttpHeaders();
-    headers = headers.append( 'token','aovTUgvSrQQbDzOdHpLIvkvfRlN38WLlHGTeblT9beWk7RdFcv37XYJ1LYHc' );
+    headers = headers.append( 'token',this.token );
     return this._http.post( this.baseURL + 'registrar-usuario', {model}, {headers});
   }
 
   acctuzarUsuario(model){
     let headers = new HttpHeaders();
-    headers = headers.append( 'token','aovTUgvSrQQbDzOdHpLIvkvfRlN38WLlHGTeblT9beWk7RdFcv37XYJ1LYHc' );
+    headers = headers.append( 'token',this.token );
     return this._http.post(this.baseURL + 'actualizar-usuario', {model}, {headers});
   }
 
   selectAllMeterUsu(model){
     let headers = new HttpHeaders();
-    headers = headers.append( 'token','aovTUgvSrQQbDzOdHpLIvkvfRlN38WLlHGTeblT9beWk7RdFcv37XYJ1LYHc' );
+    headers = headers.append( 'token',this.token );
     return this._http.post( this.baseURL + 'ver-usuario-medidor', {model}, {headers});
   }
 

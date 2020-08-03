@@ -1,6 +1,6 @@
 import {Component, OnInit} from '@angular/core';
 import { LoginServices } from "./login.services";
-import {LoginService} from "../services/login.service";
+import {LoginService} from "../../services/login.service";
 import {Router} from "@angular/router";
 
 @Component({
@@ -21,38 +21,57 @@ export class LoginComponent  implements OnInit{
 
   usr = "";
   psw = "";
+  usrValidacion = true;
+  pswValidacion = true;
   ngOnInit(){
 
   }
 
   iniciarSesion(){
-      this.loginService.login(this.usr, this.psw).subscribe((response) =>{
-        if(response['error'] != null){
+    if(this.usr.length > 3){
+      this.usrValidacion = true;
+    } else {
+      this.usrValidacion = false;
+    }
+    if(this.psw.length > 3){
+      this.pswValidacion = true;
+    } else {
+      this.pswValidacion = false;
+    }
+
+    if( this.usrValidacion == true && this.pswValidacion == true ) {
+
+
+      this.loginService.login(this.usr, this.psw).subscribe((response) => {
+        if (response['error'] != null) {
+          alert('Usuario/contraseña no valido')
         } else {
 
           localStorage.setItem('authorization', response['token']);
 
-          if(response['tipo_usuario'].tipo_usu == 'SuperUsuario'){
+          if (response['tipo_usuario'].tipo_usu == 'SuperUsuario') {
             localStorage.setItem('temp', '1');
           }
-          if(response['tipo_usuario'].tipo_usu == 'Solo lectura'){
+          if (response['tipo_usuario'].tipo_usu == 'Solo lectura') {
             localStorage.setItem('temp', '2');
           }
-          if(response['tipo_usuario'].tipo_usu == 'Supervisor'){
+          if (response['tipo_usuario'].tipo_usu == 'Supervisor') {
             localStorage.setItem('temp', '3');
           }
-          if(response['tipo_usuario'].tipo_usu == 'Operador'){
+          if (response['tipo_usuario'].tipo_usu == 'Operador') {
             localStorage.setItem('temp', '4');
           }
 
-            localStorage.setItem('nombre', response['usuario']);
+          localStorage.setItem('nombre', response['usuario']);
 
 
           this.redireccion();
         }
 
-       // if(){}
-     });
+        // if(){}
+      });
+
+    }
   }
 
   redireccion() {

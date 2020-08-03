@@ -6,6 +6,7 @@ import { MenuItems } from '../../../shared/menu-items/menu-items';
 import { MatDialog, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material';
 import {ChartDataSets, ChartOptions, ChartType} from 'chart.js';
 import {Color, BaseChartDirective, Label, MultiDataSet} from 'ng2-charts';
+import {Router} from "@angular/router";
 
 @Component({
   selector: 'app-sidebar',
@@ -25,12 +26,15 @@ export class AppSidebarComponent implements OnDestroy {
     public dialog2: MatDialog,
     public dialog3: MatDialog,
     public dialog4: MatDialog,
-    public dialog5: MatDialog
+    public dialog5: MatDialog,
+    public router: Router
   ) {
     this.mobileQuery = media.matchMedia('(min-width: 768px)');
     this._mobileQueryListener = () => changeDetectorRef.detectChanges();
     this.mobileQuery.addListener(this._mobileQueryListener);
+
   }
+  temp = this.router.getCurrentNavigation().extractedUrl.toString();
 
   ngOnDestroy(): void {
     this.mobileQuery.removeListener(this._mobileQueryListener);
@@ -412,4 +416,5 @@ export class AppSidebarComponent implements OnDestroy {
 //     onNoClick(): void {
 //       this.dialogRef3.close();
 //     }
+
 }

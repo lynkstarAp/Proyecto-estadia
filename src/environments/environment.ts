@@ -4,8 +4,8 @@
 
 export const environment = {
   production: true,
-  apiURL: 'http://192.168.100.6:8089/',
-  token: ''
+  // apiURL: 'http://localhost/estadia-protcloud/public/'
+  apiURL: 'http://localhost:8089'
 };
 
 /*

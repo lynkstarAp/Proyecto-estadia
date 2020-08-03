@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
-import {UsuarioService} from "../../services/usuario.service";
-import {UsuarioRe, Usuarios} from "../../models/Usuario";
+import {UsuarioService} from "../services/usuario.service";
+import {UsuarioRe, Usuarios} from "../models/Usuario";
 import {Router} from "@angular/router";
 
 @Component({
@@ -16,7 +16,7 @@ export class AdminEditarComponent implements OnInit {
   apellido2: string = "";
   usuario: string = "";
   contrasenia: string = "";
-  estatus: number;
+  estatus: string = "";
   tipoUsu: string = "";
   tipo: number;
 
@@ -42,18 +42,23 @@ export class AdminEditarComponent implements OnInit {
       this.nombre = this.usuarioOne.nombre;
       this.apellido1 = this.usuarioOne.apellido1;
       this.apellido2 = this.usuarioOne.apellido2;
-      this.estatus = this.usuarioOne.estatus;
+      if( this.usuarioOne.estatus == 1){
+        this.estatus = "ACTIVO";
+      } else {
+        this.estatus = "DESACTIVADO";
+      }
+
       this.tipoUsu = this.usuarioOne.tipo_usuario.tipo_usu;
-      if (this.tipoUsu === "Super Usuario") {
+      if (this.tipoUsu === "SuperUsuario") {
         this.tipo = 1;
       }
-      if (this.tipoUsu === "Operador") {
+      if (this.tipoUsu === "Solo lectura") {
         this.tipo = 2;
       }
       if (this.tipoUsu === "Supervisor") {
         this.tipo = 3;
       }
-      if (this.tipoUsu === "Solo Lectura") {
+      if (this.tipoUsu === "Operador") {
         this.tipo = 4;
       }
     }else {
@@ -119,13 +124,14 @@ export class AdminEditarComponent implements OnInit {
             console.log(userFomApi['error']);
             alert('El nombre de usuario ya existe');
           } else {
-            alert("Usuario registrado exitosamente ");
+            alert("Usuario actualizado exitosamente ");
             this.nombre = "";
             this.apellido1 = "";
             this.apellido1 = "";
             this.usuario = "";
             this.contrasenia = "";
             this.tipo = 0;
+            this.redireccion();
           }
         }
       );

@@ -4,6 +4,7 @@ import {Colectores, ColectorInstantaneo} from "../models/Colectores";
 import {HttpHeaders, HttpParams, HttpClient} from "@angular/common/http";
 import {environment} from "../../environments/environment";
 import {MedidorInstantaneo} from "../models/Medidor";
+import {InfoService} from "./info.service";
 
 
 @Injectable({
@@ -12,19 +13,25 @@ import {MedidorInstantaneo} from "../models/Medidor";
 export class ColectorService {
   colectores: Colectores;
   baseURL = environment.apiURL;
-  constructor(private _http: HttpClient) { }
+  token = this.info.getToken();
+  constructor(private _http: HttpClient, public info: InfoService) { }
 
   selectAllColectores(): Observable<Colectores> {
-    let headers = new HttpHeaders().set('token', 'aovTUgvSrQQbDzOdHpLIvkvfRlN38WLlHGTeblT9beWk7RdFcv37XYJ1LYHc');
-    // @ts-ignore
-    return this._http.get( this.baseURL+'concentrador-lista', {headers: headers} );
-
+    let temp = localStorage.getItem("temp");
+    let headers = new HttpHeaders().set('token', this.token);
+    if( temp === "1" || temp === "3" ) {
+      // @ts-ignore
+      return this._http.post(this.baseURL + 'concentrador-lista',  { usuario: null},{headers: headers});
+    } else {
+      // @ts-ignore
+      return this._http.post(this.baseURL + 'concentrador-lista',  { usuario: localStorage.getItem("nombre")},{headers: headers});
+    }
   }
 
   selectInstaMeter(mac,fecha): Observable<ColectorInstantaneo> {
 
     const options = {params: new HttpParams().set('mac', mac).set('fecha', fecha) };
-    let headers = new HttpHeaders().set('token', 'aovTUgvSrQQbDzOdHpLIvkvfRlN38WLlHGTeblT9beWk7RdFcv37XYJ1LYHc');
+    let headers = new HttpHeaders().set('token', this.token);
     // @ts-ignore
     let temp = new Array;
     temp[0] = options;
@@ -36,7 +43,7 @@ export class ColectorService {
 
   selectPerfil(model): Observable<MedidorInstantaneo> {
     let headers = new HttpHeaders();
-    headers = headers.append('token','aovTUgvSrQQbDzOdHpLIvkvfRlN38WLlHGTeblT9beWk7RdFcv37XYJ1LYHc');
+    headers = headers.append('token',this.token);
     // @ts-ignore
     return this._http.post( this.baseURL+'valores-instantaneos-col-fecha', {model} ,{ headers} );
   }
@@ -44,13 +51,14 @@ export class ColectorService {
 
   selectAllCol(){
     let headers = new HttpHeaders();
-    headers = headers.append('token','aovTUgvSrQQbDzOdHpLIvkvfRlN38WLlHGTeblT9beWk7RdFcv37XYJ1LYHc');
-    return this._http.get( this.baseURL + 'consumos-concentrador-all', { headers } );
+    headers = headers.append('token',this.token);
+    return this._http.post( this.baseURL + 'concentrador-lista', {'usuario':null}, { headers } );
   }
   llenarColectores(colecotr){
-    console.log(colecotr);
+    // console.log(colecotr);
     this.colectores = colecotr;
   }
+
   leerColector(){
     return this.colectores;
   }

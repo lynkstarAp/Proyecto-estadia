@@ -3,6 +3,7 @@ import {Medidor, MedidorInstantaneo} from "../models/Medidor";
 import {Observable} from "rxjs";
 import {HttpHeaders, HttpParams, HttpClient} from "@angular/common/http";
 import {environment} from "../../environments/environment";
+import {InfoService} from "./info.service";
 
 @Injectable({
   providedIn: 'root'
@@ -10,29 +11,21 @@ import {environment} from "../../environments/environment";
 export class MeterService {
 
   baseURL = environment.apiURL;
+  token = this.info.getToken();
 
-
-  constructor(private _http: HttpClient) { }
+  constructor(private _http: HttpClient, public  info: InfoService) { }
 
   selectAllMeter(): Observable<Medidor> {
-    const url = 'http://192.168.100.6:8089/medidor-lista';
-    const term = '';
-    // tslint:disable-next-line:one-variable-per-declaration
-    // const datos = {'name': 'pau', 'pass': '123'};
-    // const temp = { body: { 'name': user, 'pass': '123' } };
-    // const options = {params: new HttpParams().set('nombre', "a").set('pass', '123').set('name', 'pau <3') };
-    // const options = {params: new HttpParams().set('nombre', user) };
-    // const formData: any = new FormData();
-    // formData.append('name', 'pau');
-    // formData.append('pass', '123');
-    let headers = new HttpHeaders().set('token', 'aovTUgvSrQQbDzOdHpLIvkvfRlN38WLlHGTeblT9beWk7RdFcv37XYJ1LYHc');
-    // headers: new HttpHeaders().set('token', 'aovTUgvSrQQbDzOdHpLIvkvfRlN38WLlHGTeblT9beWk7RdFcv37XYJ1LYHc');
-    // @ts-ignore
-    // console.log(formData.toString());
-    // this._http.get<User>( url, options ).subscribe(response => {
-    //     console.log(response);
-    //   });
-    return this._http.get( this.baseURL+'medidor-lista', {headers: headers} );
+    let temporal = localStorage.getItem("temp");
+    let headers = new HttpHeaders().set('token', this.token);
+    if( temporal === "1" ){
+      // @ts-ignore
+      return this._http.post( this.baseURL+'medidor-lista', { usuario: null}, {headers: headers} );
+    } else {
+      // @ts-ignore
+      return this._http.post( this.baseURL+'medidor-lista',  { usuario: localStorage.getItem("nombre")}, {headers: headers} );
+    }
+
 
   }
 
@@ -40,11 +33,8 @@ export class MeterService {
 
     // const options = {params: new HttpParams().set('mac', mac).set('fecha', fecha) };
     let headers = new HttpHeaders();
-    headers = headers.append('token','aovTUgvSrQQbDzOdHpLIvkvfRlN38WLlHGTeblT9beWk7RdFcv37XYJ1LYHc');
-    let params = new HttpParams();
-    // params = params.append('mac', mac);
-    // params = params.append('fecha', fecha);
-    // let headers = new HttpHeaders().set('token', 'aovTUgvSrQQbDzOdHpLIvkvfRlN38WLlHGTeblT9beWk7RdFcv37XYJ1LYHc');
+    headers = headers.append('token',this.token);
+
     // @ts-ignore
     let temp = new Array;
     // temp[0] = options;
@@ -58,7 +48,7 @@ export class MeterService {
     const url = 'http://192.168.100.6:8089/medidor-lista';
     const options = {params: new HttpParams().set('mac', mac).set('fecha1', fecha1).set('fecha2', fecha2) };
     let headers = new HttpHeaders();
-    headers = headers.append('token','aovTUgvSrQQbDzOdHpLIvkvfRlN38WLlHGTeblT9beWk7RdFcv37XYJ1LYHc');
+    headers = headers.append('token',this.token);
     // @ts-ignore
     let temp = new Array;
     temp[0] = options;
@@ -70,13 +60,13 @@ export class MeterService {
 
   selectAllMeterEnergy(){
     let headers = new HttpHeaders();
-    headers = headers.append('token','aovTUgvSrQQbDzOdHpLIvkvfRlN38WLlHGTeblT9beWk7RdFcv37XYJ1LYHc');
+    headers = headers.append('token',this.token);
     // const options = {params: new HttpParams().set('mac', id) };
     return this._http.get(this.baseURL + 'consumos-medidor-all', { headers });
   }
 
   selectOneMeter(model) {
-    let headers = new HttpHeaders().set('token', 'aovTUgvSrQQbDzOdHpLIvkvfRlN38WLlHGTeblT9beWk7RdFcv37XYJ1LYHc');
+    let headers = new HttpHeaders().set('token', this.token);
     return this._http.post( this.baseURL+'medidor-usr', {model}, {headers} );
 
   }

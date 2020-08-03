@@ -11,7 +11,7 @@ import {ChartsModule} from "ng2-charts";
 import {NgxPaginationModule} from "ngx-pagination";
 import {AreasComponent} from "./areas.component";
 import {AgmCoreModule} from "@agm/core";
-import {DemoMaterialModule} from "../../demo-material-module";
+import {DemoMaterialModule} from "../demo-material-module";
 
 
 @NgModule({

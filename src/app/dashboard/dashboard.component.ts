@@ -8,7 +8,7 @@ import {MAT_DIALOG_DATA, MatDialog, MatDialogRef} from "@angular/material/dialog
 import {MenuItems} from "../shared/menu-items/menu-items";
 import {MediaMatcher} from "@angular/cdk/layout";
 import {BaseChartDirective, Color, Label, MultiDataSet} from "ng2-charts";
-
+import { ActivatedRoute } from "@angular/router";
 //----------------------------------------------------------------------------------------------------------------------
 import {HttpClient} from "@angular/common/http";
 import {MeterService} from "../services/meter.service";
@@ -21,6 +21,9 @@ import {ComunicacionService} from "../services/comunicacion.service";
 import {ConsumoService} from "../services/consumo.service";
 import {LoginService} from "../services/login.service";
 //----------------------------------------------------------------------------------------------------------------------
+import { LoginServices } from "../material-component/login/login.services";
+import {LoginM} from "../material-component/login/login.models";
+import {InfoService} from "../services/info.service";
 
 
 declare var require: any;
@@ -43,8 +46,9 @@ export interface Chart {
   templateUrl: './dashboard.component.html',
   styleUrls: ['./dashboard.component.scss']
 })
-export class DashboardComponent {
+export class DashboardComponent implements OnInit{
 
+  login: LoginM[];
   mobileQuery: MediaQueryList;
   private _mobileQueryListener: () => void;
 
@@ -55,23 +59,26 @@ export class DashboardComponent {
     public dialog: MatDialog,
     public medidorService: MeterService,
     public colectorService: ColectorService,
-    public loginService: LoginService
+    public loginService: LoginService,
+    private _route: ActivatedRoute,
+    public loginS: LoginServices,
+    public info: InfoService
   ) {
+
     this.mobileQuery = media.matchMedia('(min-width: 768px)');
     this._mobileQueryListener = () => changeDetectorRef.detectChanges();
     this.mobileQuery.addListener(this._mobileQueryListener);
-    // this.selectMeter();
+    this.selectMeter();
     this.selectColector();
 
-this.iniciarSesion();
   }
 
-  iniciarSesion(){
-    this.loginService.login('gaby','gabi123').subscribe(
-      (response) => {
-        console.log(response);
-      }
-    );
+
+  ngOnInit(){
+    let nombre = +this._route.snapshot.paramMap.get('nombre');
+
+    this.login = this.loginS.getLogin();
+    //console.log(this.login);
   }
 
   styles = [
@@ -268,6 +275,7 @@ this.iniciarSesion();
 
   checked = false;
   visible = false;
+  nvl = localStorage.getItem("temp");
 
   medidor: Medidor;
   colector: Colectores;
@@ -276,12 +284,26 @@ this.iniciarSesion();
     this.medidorService.selectAllMeter().subscribe(
       (meterFromTheApi: Medidor) => {
         this.medidor = meterFromTheApi;
-        console.log(meterFromTheApi);
+        //console.log(meterFromTheApi);
       }, (err: any) => {
         console.error(err);
 
       }
     );
+  }
+
+  getInfo(){
+    try {
+      let user = localStorage.getItem('nombre');
+        let nombre = localStorage.getItem('nombre');
+        let token = localStorage.getItem('authorization');
+        let tipo = localStorage.getItem('temp');
+        console.log(nombre + " " + token + " " + tipo);
+        this.info.setInfo(nombre, tipo, token);
+        localStorage.clear();
+    } catch (e) {
+      console.log(e);
+    }
   }
 
 // @ts-ignore
@@ -297,7 +319,7 @@ this.iniciarSesion();
   openDialog(v): void {
     if (this.controladorOpenModa == false) {
       this.controladorOpenModa = true;
-      console.log("mac -> " + v.mac);
+      //console.log("mac -> " + v.mac);
       mac = v.mac;
       if (v.mac != null) {
         tipo = "medidor";
@@ -308,8 +330,8 @@ this.iniciarSesion();
       estadoRelevador = v.estado_relevador;
 
       const dialogRef = this.dialog.open(Modal, {
-        width: '30%',
-        height: '90%',
+        // width: '30%',
+        // height: '90%',
         disableClose: false,
         hasBackdrop: false,
         position: {'bottom': '20px', 'left': '900px'},
@@ -324,17 +346,6 @@ this.iniciarSesion();
   }
 
 //----------------------------------------------------------------------------------------------------------------------
-//   mapClicked($event: MouseEvent) {
-//     this.markers.push({
-//       label: "",
-//       lat: $event.coords.lat,
-//       lng: $event.coords.lng,
-//       draggable: true,
-//       name: '',
-//       url: ''
-//     });
-//   }
-
   markerDragEnd(m: marker, $event: MouseEvent) {
     console.log('dragEnd', m, $event);
   }
@@ -354,45 +365,14 @@ this.iniciarSesion();
 
   // @ts-ignore
   urlC: marker = '../../../assets/images/users/protcomm_i_max.png';
-  // marker: colector[] = [
-  //   {
-  //     lat: 26.2331619,
-  //     lng: -109.1958962,
-  //     label: '',
-  //     draggable: true,
-  //     name: '',
-  //     url: '../../../assets/images/users/protcomm_i_max.png'
-  //   },
-  //   {
-  //     lat: 20.6437224,
-  //     lng: -100.4621913,
-  //     label: '',
-  //     draggable: true,
-  //     name: '',
-  //     url: '../../../assets/images/users/protcomm_i_max.png'
-  //   }
-  // ];
-
   clickedMarkers(label: string, index: number) {
     console.log(`clicked the marker: ${label || index}`);
   }
-
-  // mapsClicked($event: MouseEvent) {
-  //   this.markers.push({
-  //     label: "",
-  //     lat: $event.coords.lat,
-  //     lng: $event.coords.lng,
-  //     draggable: true,
-  //     name: '',
-  //     url: ''
-  //   });
-  // }
 
   markersDragEnd(c: colector, $event: MouseEvent) {
     console.log('dragEnd', c, $event);
   }
 }
-
 
 //---------------------------------------------INTERFACES---------------------------------------------------------------
 interface marker {
@@ -593,9 +573,6 @@ export class Modal implements OnInit {
 
   @ViewChild(BaseChartDirective, {static: true}) chart: BaseChartDirective;
 
-  // /*constructor(public dialogRef: MatDialogRef<DialogOverviewExampleDialogComponent>,
-  //             @Inject(MAT_DIALOG_DATA) public data: any) { }*/
-
   public chartHovered({event, active}: { event: MouseEvent, active: {}[] }): void {
     // console.log(event, active);
   }
@@ -644,14 +621,10 @@ export class Modal implements OnInit {
               dataPerdidaDada = i['energia_aparente'];
               dataPerdidaCons = i['energia_activa'];
             }
-            // dataPerdidaGen.push(i['energia_reactiva']);
-            // dataPerdidaDada.push(i['energia_aparente']);
-            // dataPerdidaCons.push(i['energia_activa']);
             dataPerdidaGenT += i['energia_reactiva'];
             dataPerdidaDadaT = dataPerdidaDadaT + i['energia_aparente'];
             dataPerdidaConsT += i['energia_activa'];
 
-            // console.log(' /// ' + dataPerdidaGenT + ' /// ' + dataPerdidaDadaT + ' /// ' + dataPerdidaConsT);
             this.final = dataPerdidaDadaT;
             cons = cons + 1;
           }
@@ -661,7 +634,6 @@ export class Modal implements OnInit {
           dataPerdidaT.push(dataPerdidaGen);
           dataPerdidaT.push(dataPerdidaDada);
           dataPerdidaT.push(dataPerdidaCons);
-          // console.log(meterFromTheApi );
         }
       }, (err: any) => {
         console.error(err);
@@ -722,7 +694,6 @@ export class Modal implements OnInit {
 //-------------------------------------GRAFICA DE PERFILES--------------------------------------------------------------
   selectPerfil() {
     let medidorIntenataneo: MedidorInstantaneo = null;
-    console.log("1: " + fechaInicial + " 2: " + fechaFinal);
     if (fechaInicial.length < 10 && fechaFinal.length < 10) {
       return null;
     } else if (fechaInicial.length == 10 && fechaFinal.length == 10) {
@@ -744,22 +715,18 @@ export class Modal implements OnInit {
               let fechaHoraIns = String(i['fecha_hora']);
               let temp = fechaHoraIns.split(" ");
               fechaPerfil.push(temp[1]);
-              // console.log(i + ' /// ' + dataInstantaneaVol + ' /// ' + dataInstantaneoHr + ' /// ' + dataInstantaneoCor);
             }
-            // console.log(meterFromTheApi );
+
           }
         }, (err: any) => {
           console.error(err);
         }
       );
-      console.log(datosPerfil);
-      console.log(fechaPerfil);
     }
   }
 
   selectPerfilCol() {
     let colectorIntenataneo: ColectorInstantaneo = null;
-    console.log("1: " + fechaInicial + " 2: " + fechaFinal);
     if (fechaInicial.length < 10 && fechaFinal.length < 10) {
       return null;
     } else if (fechaInicial.length == 10 && fechaFinal.length == 10) {
@@ -777,16 +744,13 @@ export class Modal implements OnInit {
               let fechaHoraIns = String(i['fecha_hora']);
               let temp = fechaHoraIns.split(" ");
               fechaPerfil.push(temp[1]);
-              // console.log(i + ' /// ' + dataInstantaneaVol + ' /// ' + dataInstantaneoHr + ' /// ' + dataInstantaneoCor);
             }
-            // console.log(meterFromTheApi );
+
           }
         }, (err: any) => {
           console.error(err);
         }
       );
-      console.log(datosPerfil);
-      console.log(fechaPerfil);
     }
   }
 
@@ -828,7 +792,6 @@ export class Modal implements OnInit {
   public lineChartOptionsC: (ChartOptions & { annotation: any }) = {
     responsive: true,
     scales: {
-      // We use this empty structure as a placeholder for dynamic theming.
       xAxes: [{}],
       yAxes: [
         {
@@ -890,20 +853,9 @@ export class Modal implements OnInit {
 
 //-------------------------------------GRAFICA DE BALANCES DE CONSUMO---------------------------------------------------
 
-  public doughnutChartLabelsBC: Label[] = ['Balance', 'Entregada', 'Recibida'];
-  public doughnutChartDataBC: MultiDataSet = [
-    [350, 450, 100]
-  ];
-
-  public doughnutChartData2BC: MultiDataSet = [
-    [134, 489, 300]
-  ];
-
   public doughnutChartData3BC: ChartDataSets[] = [
     {data: consumosTotales}
   ];
-
-  public doughnutChartTypeBC: ChartType = 'doughnut';
 
   //--------------------------- CONSUMOS -------------------------------------------------------------
   public doughnutChartLabels1: Label[] = ['Área', 'Testigo', 'Perdidas'];
@@ -917,10 +869,16 @@ export class Modal implements OnInit {
 
   public doughnutChartType1: ChartType = 'doughnut';
 
+  public doughnutChartColors: Color[] = [
+    {
+      backgroundColor: ['rgb(222,0,43)', 'rgb(16,255,0)', 'rgb(68,75,63)'],
+    },
+  ];
+
   //------------------------------------ PETICION ------------------------------------------------------------------------
 
   selectMeterConsumo() {
-    console.log('ejecuto metodo ' + mac);
+    // console.log('ejecuto metodo ' + mac);
   }
 
 
@@ -1185,8 +1143,7 @@ export class Modal implements OnInit {
     comunicacionEnviados.length = 0;
     comunicacionPerdidos.length = 0;
     comunicacionFecha.length = 0;
-    console.log("1: " + fechaInicial + " 2: " + fechaFinal);
-    this.comunicacionService.selectComunicacionMedidor({"mac": mac, "fecha": fecha}).subscribe(
+     this.comunicacionService.selectComunicacionMedidor({"mac": mac, "fecha": fecha}).subscribe(
       (comunicacionFromTheApi: Comunicacion) => {
         // @ts-ignore
         if (comunicacionFromTheApi != null) {
@@ -1198,30 +1155,17 @@ export class Modal implements OnInit {
             let hora = fechaHoraIns.split(" ");
             comunicacionFecha.push(hora[1]);
 
-            // console.log(i + ' /// ' + dataInstantaneaVol + ' /// ' + dataInstantaneoHr + ' /// ' + dataInstantaneoCor);
           }
-          // console.log(meterFromTheApi );
-        }
+
+         }
       }, (err: any) => {
         console.error(err);
       }
     );
-    console.log(datosPerfil);
-    console.log(fechaPerfil);
 
   }
 
   selectConsumosMed() {
-
-    // consumosEntregadaAcutal = 0;
-    // consumosEntregadaPasado = 0;
-    // consumosEntregadaTotal = 0;
-    // consumosRecibidaAcutal = 0;
-    // consumosRecibidaPasado = 0;
-    // consumosRecibidaTotal = 0;
-    // consumosNeteoAcutal = 0;
-    // consumosNeteoPasado = 0;
-    // consumosNeteoTotal = 0;
 
     consumosActualT.length = 0;
     consumosAnteriorT.length = 0;
@@ -1243,7 +1187,6 @@ export class Modal implements OnInit {
             consumosNeteoAcutal = n['energia_necta_actual'];
             consumosNeteoPasado = n['energia_necta_anterior'];
             consumosNeteoTotal = n['energia_necta_total'];
-            console.log(consumosEntregadaAcutal + " " + consumosRecibidaAcutal + " " + consumosNeteoAcutal);
             consumosActualT.push(n['energia_entregada_actual']);
             consumosActualT.push(n['energia_recibida_actual']);
             consumosActualT.push(n['energia_necta_actual']);
@@ -1257,16 +1200,11 @@ export class Modal implements OnInit {
             consumosTotales.push(n['energia_necta_total']);
 
           }
-          // console.log(consumosFromTheApi );
-
         }
       }, (err: any) => {
         console.error(err);
       }
     );
-
-    console.log(consumosActualT);
-
   }
 }
 

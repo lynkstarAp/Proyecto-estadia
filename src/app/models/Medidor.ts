@@ -9,6 +9,7 @@ export interface Medidor {
   latitud: number;
   longitud: number;
   url: '../../../assets/images/users/mcr_min.png';
+  neteo: number;
   draggable: true;
   label: '';
   estatus: number;

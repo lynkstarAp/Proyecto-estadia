@@ -11,7 +11,7 @@ import {DragDropModule} from "@angular/cdk/drag-drop";
 import {ChartsModule} from "ng2-charts";
 import {NgxPaginationModule} from "ngx-pagination";
 import {AdminEditarComponent} from "./admin-editar.component";
-import {DemoMaterialModule} from "../../demo-material-module";
+import {DemoMaterialModule} from "../demo-material-module";
 
 
 

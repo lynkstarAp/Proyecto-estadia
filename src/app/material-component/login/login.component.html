@@ -13,9 +13,16 @@
   <div>
     <!-- USERNAME INPUT -->
     <label >Username</label>
+    <label class="control-label col-sm-12 col-lg-12 col-xl-12" style="background: #d20007; text-align: center; height: 27px" *ngIf="usrValidacion == false">
+      Ingresa un usuario valido
+    </label>
     <input type="text" placeholder="Enter Username" [(ngModel)]="usr">
+
     <!-- PASSWORD INPUT -->
     <label >Password</label>
+    <label class="control-label col-sm-12 col-lg-12 col-xl-12" style="background: #d20007; text-align: center; height: 27px" *ngIf="pswValidacion == false">
+      Ingresa una contraseña valida
+    </label>
     <input type="password" placeholder="Enter Password" [(ngModel)]="psw">
     <a ><input type="submit" value="Log In" (click)="iniciarSesion()"></a>
     <!--    <a href="#">Lost your Password?</a><br>-->

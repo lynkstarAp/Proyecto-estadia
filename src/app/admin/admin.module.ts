@@ -10,7 +10,7 @@ import {CdkTableModule} from "@angular/cdk/table";
 import {DragDropModule} from "@angular/cdk/drag-drop";
 import {ChartsModule} from "ng2-charts";
 import {NgxPaginationModule} from "ngx-pagination";
-import {DemoMaterialModule} from "../../demo-material-module";
+import {DemoMaterialModule} from "../demo-material-module";
 
 
 @NgModule({

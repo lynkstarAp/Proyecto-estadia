@@ -1,10 +1,10 @@
 import { Component , OnInit, ViewChild } from '@angular/core';
-import { AreasService } from "../../services/areas.service";
+import { AreasService } from "../services/areas.service";
 import {MatPaginator} from '@angular/material/paginator';
 import {MatSort} from '@angular/material/sort';
 import {MatTableDataSource} from '@angular/material/table';
 import {ActivatedRoute} from "@angular/router";
-import {Areas} from "../../models/Areas";
+import {Areas} from "../models/Areas";
 
 
 @Component({
@@ -86,9 +86,17 @@ export class AreasComponent {
   }
 
   eliminar(area){
-    this.area.desactivarArea(area).subscribe( (response) => {
-      alert(response);
-    });
+    let r = confirm("Desea borrarlo?");
+    if( r == true ){
+      this.area.desactivarArea(area).subscribe( (response) => {
+        alert("Area borrada exitosamente");
+        this.selectAreas();
+      });
+    }
+    if( r == false ){
+
+    }
+
   }
 
   hi: any = [

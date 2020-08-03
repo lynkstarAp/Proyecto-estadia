@@ -33,7 +33,7 @@
           <strong class="text-danger">*</strong>
           Estatus:
         </label>
-        <input type="text" name="password" class="form-control" style="background: rgba(102,102,102,0.19); color: white" required [(ngModel)]="estatus" />
+        <input type="text" name="password" class="form-control" style="background: rgba(102,102,102,0.19); color: white" required [(ngModel)]="estatus" disabled />
       </div>
  <!------------------------------------------------Tipo Usuario--------------------------------------------------------->
       <div class="col-lg-12" style="margin-top:2%;">
@@ -43,7 +43,7 @@
         </label>
         <!--                    <input type="text" name="tipo_usuario" class="form-control" required/>-->
         <select style="height: 45px;background: rgba(102,102,102,0.19); color: white" name="tipo_usuario" class="form-control" [(ngModel)]="tipo" >
-          <option value="{{tipo}}" selected> {{tipoUsu}}</option>
+          <option value="{{tipo}}" selecte> {{tipoUsu}}</option>
           <option value="1"> Super Usuario </option>
           <option value="2"> Operador </option>
           <option value="3"> Supervisor </option>
@@ -56,7 +56,7 @@
           &nbsp;
           <br>
         </label>
-        <button class="btn btn-lg2" type="submit" style="border: 3px solid #149e00; background-color: transparent; color: #149e00" (click)="actualizarUsuario()"><a href="admin" style="color: #149e00">Guardar</a></button>
+        <button class="btn btn-lg2" type="submit" style="border: 3px solid #149e00; background-color: transparent; color: #149e00" (click)="actualizarUsuario()"><a style="color: #149e00">Guardar</a></button>
       </div>
  <!-------------------------------------------------Boton Cancelar------------------------------------------------------>
       <div class="col-lg-12" style="margin-top:2%;">

@@ -1,6 +1,7 @@
 <!-- ============================================================== -->
 <!-- sidebar -->
 <!-- ============================================================== -->
+<!--<div *ngIf="temp != '/login'">-->
 <div class="user-profile" >
   <!-- User profile image -->
 <!--  <div class="profile-img"> <img src="assets/images/users/avatar.png" alt="user"></div>-->
@@ -14,7 +15,7 @@
 <!-- ============================================================== -->
 <!-- Profile - style you can find in header.scss -->
 <!-- ============================================================== -->
-<mat-nav-list appAccordion>
+<mat-nav-list appAccordion >
   <mat-list-item appAccordionLink *ngFor="let menuitem of menuItems.getMenuitem()" routerLinkActive="selected" group="{{menuitem.state}}">
     <a class="" appAccordionToggle [routerLink]="['/', menuitem.state]" *ngIf="menuitem.type === 'link'" >
       <mat-icon>{{ menuitem.icon }}</mat-icon>
@@ -24,3 +25,4 @@
     </a>
       </mat-list-item>
 </mat-nav-list>
+<!--</div>-->

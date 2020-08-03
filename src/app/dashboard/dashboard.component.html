@@ -3,7 +3,7 @@
       <mat-slide-toggle style="color: white; size: 20px" class="example-margin"
         [checked]="checked"
         [(ngModel)] = "checked"
-        (change)="selectMeter()">
+        >
         Medidores
       </mat-slide-toggle>
 
@@ -14,6 +14,8 @@
       </mat-slide-toggle>
     </section>
   </mat-card-content>
+
+
 
 <div  class="col-xl-12" style="text-align: center !important">
   <div fxFlex.gt-sm="100%" class="google-maps">
@@ -43,7 +45,7 @@
       </agm-marker>
 //----------------------------------------------------------------------------------------------------------------------
       <agm-marker
-        *ngIf="(visible) == true">
+        *ngIf="(visible) == true && nvl == 1 || nvl == 3">
         <agm-marker
           *ngFor="let c of colector; let i = index; let menuitem of menuItems.getMenuitem()"
           (markerClick)="clickedMarkers(c.label, i)"
@@ -59,5 +61,8 @@
       </agm-marker>
 //----------------------------------------------------------------------------------------------------------------------
     </agm-map>
+
+
+
   </div>
 </div>
