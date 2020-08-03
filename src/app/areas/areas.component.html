@@ -1,0 +1,127 @@
+<!-- ============================================================== -->
+<!-- row -->
+<!-- ============================================================== -->
+<div fxLayout="row wrap" class="table table-responsive table-bordered table-hover table-striped"
+     xmlns="http://www.w3.org/1999/html">
+  <!-- column -->
+  <div fxFlex.gt-xl="50" fxFlex.gt-md="33"  fxFlex.gt-xs="100" fxFlex="100" >
+
+    <!-- Card column -->
+    <div fxFlex.gt-sm="100" fxFlex="100" >
+      <mat-card style="width: 295%" class="table-responsive">
+          <mat-card-content>
+            <mat-card-title style="text-align: center!important;">Áreas</mat-card-title>
+          </mat-card-content>
+          <mat-tab-group>
+            <div style="text-align: center!important;" class="col-sm-12 col-xl-12 col-md-12 eow" >
+              <!------------------------------------------------------------------------------------------------------------------------>
+              <mat-tab label="Formato bloque" class="col-sm-12 col-xl-12 col-md-12" ><mat-card-content class="col-sm-12 col-md-12 col-xl-12 row">
+                <div fxFlex.gt-lg="33" fxFlex.gt-md="33" fxFlex.gt-xs="100" fxFlex="x100" *ngFor="let aa of areas" class="col-sm-12 col-md-12 col-xl-12 row" >
+                  <mat-card class="col-sm-12 col-xl-12 col-md-12">
+                    <mat-card-content style="background-color: #212121; border: 4px #120000 groove;" class="col-sm-12 col-xl-12 col-md-12 row">
+                      <div class="row">
+                        <div class="piechart">
+                              <agm-map
+                                [latitude]="aa.latitud"
+                                [longitude]="aa.longitud"
+                                [zoom]="zoom"
+                                [disableDefaultUI]="false"
+                                [zoomControl]="false"></agm-map>
+
+                              <div class="col-lg-12" style="margin-top:2%;">
+                                <h6 class="control-label">
+                                  Nombre: {{aa.nombre}}
+                                </h6>
+                                <h6>
+                                  N° de Equipos: {{aa.medidores.total}}
+                                </h6>
+                                <h6>
+                                  Latitud: {{aa.latitud}}
+                                </h6>
+                                <h6>
+                                  Longitud: {{aa.longitud}}
+                                </h6>
+                              </div>
+
+                          <div>
+                            <button class="btn " type="submit" style="border: 3px solid #149e00; background-color: transparent; color: #149e00; margin-right: 26%" ><a [routerLink]="['/', 'areas_detalle']" (click)="select(aa.id_area)" style="color: #149e00">Ver Más</a></button>
+                            <button class="btn" type="reset" style="border: 3px solid #c31505; background-color: transparent; color: #c31505"><a style="color: #c31505" (click)="eliminar(aa.id_area)" >Eliminar</a></button>
+                          </div>
+
+                        </div>
+                      </div>
+                    </mat-card-content>
+                  </mat-card>
+                </div>
+              </mat-card-content></mat-tab>
+<!------------------------------------------------------------------------------------------------------------------------>
+              <mat-tab label="Alta Área"><mat-card-content>
+                <div>
+                <h3>Datos <strong>Básicos</strong></h3>
+                </div>
+<!--------------------------------------------------NOMBRE AREA-------------------------------------------------------->
+                <div class="col-lg-12" style="margin-top:2%;">
+                  <label class="control-label">
+                    <strong class="text-danger">*</strong>
+                    Nombre único del Área
+                  </label>
+                  <input type="text" name="nombre" style="background: rgba(102,102,102,0.19); color: white" class="form-control" requered [(ngModel)]="nombre" />
+                  <label class="control-label col-sm-12 col-lg-12 col-xl-12" style="background: rgba(210,0,7,0.57)" *ngIf="nombreValidacion == false">
+                    Ingresa un nombre valido
+                  </label>
+                </div>
+<!------------------------------------------------DESCRIPCION AREA----------------------------------------------------->
+                <div class="col-lg-12" style="margin-top:2%;">
+                  <label class="control-label">
+                    <strong class="text-danger">*</strong>
+                    Descripción del Área
+                  </label>
+                  <input type="text" name="nombre" style="background: rgba(102,102,102,0.19); color: white" class="form-control" requered [(ngModel)]="descripcion"/>
+                  <label class="control-label col-sm-12 col-lg-12 col-xl-12" style="background: rgba(210,0,7,0.57)" *ngIf="descripcionValidacion == false">
+                    Ingresa una descripción valida
+                  </label>
+                </div>
+<br>
+                <div>
+                  <h3>Geolocalización</h3>
+                </div>
+<!------------------------------------------------LATITUD-------------------------------------------------------------->
+                <div class="col-lg-12" style="margin-top:2%;">
+                  <label class="control-label">
+                    <strong class="text-danger">*</strong>
+                    Latitud
+                  </label>
+                  <input type="number" name="nombre" style="background: rgba(102,102,102,0.19); color: white" class="form-control" requered [(ngModel)]="latitud"/>
+                  <label class="control-label col-sm-12 col-lg-12 col-xl-12" style="background: rgba(210,0,7,0.57)" *ngIf="latitudValidacion == false">
+                    Ingresa un numero valido
+                  </label>
+                </div>
+<!------------------------------------------------LONGITUF------------------------------------------------------------->
+                <div class="col-lg-12" style="margin-top:2%;">
+                  <label class="control-label">
+                    <strong class="text-danger">*</strong>
+                    Longitud
+                  </label>
+                  <input type="number" name="nombre" style="background: rgba(102,102,102,0.19); color: white" class="form-control" requered [(ngModel)]="longitud"/>
+                  <label class="control-label col-sm-12 col-lg-12 col-xl-12" style="background: rgba(210,0,7,0.57)" *ngIf="longitudValidacion == false">
+                    Ingresa un numero valido
+                  </label>
+                </div>
+<!------------------------------------------------BOTON ENVIAR------------------------------------------------------------->
+                <div class="col-lg-12" style="margin-top:2%;">
+                  <label class="control-label">
+                    &nbsp;
+                    <br>
+                  </label>
+                  <button class="btn btn-lg2" style="border: 3px solid #149e00; background-color: transparent; color: #149e00" type="submit" (click)="validar()">
+                    <strong>ENVIAR</strong></button>
+                </div>
+              </mat-card-content>
+              </mat-tab>
+            </div>
+          </mat-tab-group>
+        </mat-card>
+      </div>
+    </div>
+  </div>
+

@@ -1,0 +1,173 @@
+<mat-card>
+  <mat-card-content>
+    <mat-card-title style="text-align: center!important;">Registrar Usuarios</mat-card-title>
+    <div class="container" style="margin-top:5%;"> <!--AQUÏ-->
+      <!--        <div class="row">-->
+      <div class="panel panel-default">
+
+        <div class="panel-body">
+          <form action="Registro" method="post">
+
+            <!--------------------------------------------Nombre------------------------------------------------------------------->
+            <div class="col-lg-12" style="margin-top:2%;">
+              <label class="control-label">
+                <strong class="text-danger">*</strong>
+                Nombre
+              </label>
+              <input type="text" name="nombre" class="form-control" style="background: rgba(102,102,102,0.19); color: white" [(ngModel)]="nombre" requered/>
+              <label class="control-label col-sm-12 col-lg-12 col-xl-12" style="background: #d20007" *ngIf="nombreValidacion == false">
+                Ingresa un nombre valido
+              </label>
+            </div>
+            <!------------------------------------------------Apellido 1----------------------------------------------------------->
+            <div class="col-lg-12" style="margin-top:2%;">
+              <label class="control-label">
+                <strong class="text-danger">*</strong>
+                Apellido 1:
+              </label>
+              <input type="text" name="apellido1" class="form-control" style="background: rgba(102,102,102,0.19); color: white" [(ngModel)]="apellido1" required/>
+              <label class="control-label col-sm-12 col-lg-12 col-xl-12" style="background: #d20007" *ngIf="apellido1Validacion == false">
+                Ingresa un apellido valido
+              </label>
+            </div>
+            <!------------------------------------------------Apellido 2----------------------------------------------------------->
+            <div class="col-lg-12" style="margin-top:2%;">
+              <label class="control-label">
+                <strong class="text-danger">*</strong>
+                Apellido 2:
+              </label>
+              <input type="text" name="apellido2" class="form-control" style="background: rgba(102,102,102,0.19); color: white" [(ngModel)]="apellido2" required/>
+            </div>
+            <!--------------------------------------------Usuario------------------------------------------------------------------>
+            <div class="col-lg-12" style="margin-top:2%;">
+              <label class="control-label">
+                <strong class="text-danger">*</strong>
+                Usuario:
+              </label>
+              <input type="text" name="usuario" requered enable class="form-control" style="background: rgba(102,102,102,0.19); color: white" [(ngModel)]="usuario"/>
+              <label class="control-label col-sm-12 col-lg-12 col-xl-12" style="background: #d20007" *ngIf="usuarioValidacion == false">
+                Ingresa un usuario valido
+              </label>
+            </div>
+            <!---------------------------------------------Contraseña-------------------------------------------------------------->
+            <div class="col-lg-12" style="margin-top:2%;">
+              <label class="control-label">
+                <strong class="text-danger">*</strong>
+                Contraseña:
+              </label>
+              <input type="password" name="contrasena" class="form-control" style="background: rgba(102,102,102,0.19); color: white" [(ngModel)]="contrasenia" requered />
+              <label class="control-label col-sm-12 col-lg-12 col-xl-12" style="background: #d20007" *ngIf="contraseniaValidacion == false">
+                Ingresa una contraseña valido
+              </label>
+            </div>
+            <!------------------------------------------------Estaus--------------------------------------------------------------->
+            <!--                        <div class="col-lg-12" style="margin-top:2%;">-->
+            <!--                          <label class="control-label">-->
+            <!--                            <strong class="text-danger">*</strong>-->
+            <!--                            Estatus:-->
+            <!--                          </label>-->
+            <!--                          <input type="text" name="password" class="form-control" required />-->
+            <!--                        </div>-->
+            <!------------------------------------------------Tipo Usuario--------------------------------------------------------->
+            <div class="col-lg-12" style="margin-top:2%;">
+              <label class="control-label">
+                <strong class="text-danger">*</strong>
+                Tipo Usuario:
+              </label>
+              <!--                    <input type="text" name="tipo_usuario" class="form-control" required/>-->
+              <label class="control-label col-sm-12 col-lg-12 col-xl-12" style="background: #d20007" *ngIf="tipoValidacion == false">
+                Selecciona una opcion valida
+              </label>
+              <select style="height: 45px; background: rgba(102,102,102,0.19); color: white" name="tipo_usuario" class="form-control"  [(ngModel)]="tipoUsu" required>
+                <!--                    <option value="4">Solo Lectura</option>-->
+                <option value="1"> Super Usuario </option>
+                <option value="2"> Operador </option>
+                <option value="3"> Supervisor </option>
+                <option value="4" selected> Solo Lectura </option>
+              </select>
+            </div>
+            <!-------------------------------------------------Boton Guardar------------------------------------------------------->
+            <!-- COLUMNA DEL BOTON -->
+            <div class="col-lg-12" style="margin-top:2%;">
+              <label class="control-label">
+                &nbsp;
+                <br>
+              </label>
+              <button class="btn btn-success btn-lg" type="submit" style="border: 3px solid #149e00; background-color: transparent; color: #149e00" (click)="registrarUsuario()" >Registrar</button>
+            </div>
+            <br>
+            <br>
+            <!--------------------------------------------------------------------------------------------------------------------->
+
+
+            <mat-card-title style="text-align: center!important;">Usuarios</mat-card-title>
+
+            <div style="text-align: center!important;">
+              <div class="mat-elevation-z8 table table-responsive table-borderless table-hover table-striped">
+                <table  mat-table [dataSource]="dataSource" matSort class="table">
+
+                  <ng-container matColumnDef="id">
+                    <th mat-header-cell *matHeaderCellDef mat-sort-header style=" width: 1% "> # </th>
+                    <td mat-cell *matCellDef="let row" style="width: 1%" style="text-align: center"> {{row.id}} </td>
+                  </ng-container>
+
+                  <ng-container matColumnDef="usuario">
+                    <th mat-header-cell *matHeaderCellDef mat-sort-header> Usuario </th>
+                    <td mat-cell *matCellDef="let row" style="text-align: center"> {{row.usuario}} </td>
+                  </ng-container>
+
+                  <ng-container matColumnDef="nombre">
+                    <th mat-header-cell *matHeaderCellDef mat-sort-header> Nombre </th>
+                    <td mat-cell *matCellDef="let row" style="text-align: center"> {{row.nombre}}</td>
+                  </ng-container>
+
+                  <ng-container matColumnDef="apellido1">
+                    <th mat-header-cell *matHeaderCellDef mat-sort-header> Apellido 1 </th>
+                    <td mat-cell *matCellDef="let row" style="text-align: center"> {{row.apellido1}} </td>
+                  </ng-container>
+
+                  <ng-container matColumnDef="apellido2">
+                    <th mat-header-cell *matHeaderCellDef mat-sort-header> Apellido 2 </th>
+                    <td mat-cell *matCellDef="let row" style="text-align: center"> {{row.apellido2}} </td>
+                  </ng-container>
+
+                  <ng-container matColumnDef="estatus">
+                    <th mat-header-cell *matHeaderCellDef mat-sort-header> Estatus </th>
+                    <td mat-cell *matCellDef="let row" style="text-align: center"> {{row.estatus}} </td>
+                  </ng-container>
+
+                  <ng-container matColumnDef="tipo">
+                    <th mat-header-cell *matHeaderCellDef mat-sort-header> Tipo de Usuario </th>
+                    <td mat-cell *matCellDef="let row" style="text-align: center"> {{row.tipo_usuario.tipo_usu}} </td>
+                  </ng-container>
+
+                  <ng-container matColumnDef="accion">
+                    <th mat-header-cell *matHeaderCellDef mat-sort-header> Acción </th>
+                    <tr mdbTableCol>
+                      <td mat-cell *matCellDef="let row" style="text-align: center">
+                        <a  [routerLink]="['/', 'admin_medidor']" (click)="selectUsInfo(row.usuario)"><mat-icon style="color: white">settings_input_svideo<h6>Medidor</h6></mat-icon></a><br>
+                        <a  appAccordionToggle [routerLink]="['/', 'admin_editar']"  (click)="selectUsInfo(row.usuario)"><mat-icon style="color: white">settings<h6>Editar</h6></mat-icon></a>
+
+                      </td>
+                    </tr>
+                  </ng-container>
+
+                  <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+                  <tr mat-row *matRowDef="let row; columns: displayedColumns;">
+                  </tr>
+                </table>
+
+                <mat-paginator style="background-color: #2d2d2d; color: #FFFFFF" [pageSizeOptions]="[5, 10, 25, 100]"></mat-paginator>
+              </div>
+            </div>
+
+          </form>
+        </div><!-- AQUI TERMINA EL PANEL-BODY -->
+      </div>
+      <!--        </div>-->
+    </div>
+
+  </mat-card-content>
+</mat-card>
+
+

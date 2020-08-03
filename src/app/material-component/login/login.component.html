@@ -1,0 +1,26 @@
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Login</title>
+  <link rel="stylesheet" href="/css/master.css">
+</head>
+<body>
+
+<div class="login-box">
+  <img src="assets/images/users/avatar.png" class="avatar" alt="Avatar Image">
+  <h1>Login</h1>
+<!--  <form (submit)="addLogin(newUsuario, newContrasena)">-->
+  <div>
+    <!-- USERNAME INPUT -->
+    <label >Username</label>
+    <input type="text" placeholder="Enter Username" [(ngModel)]="usr">
+    <!-- PASSWORD INPUT -->
+    <label >Password</label>
+    <input type="password" placeholder="Enter Password" [(ngModel)]="psw">
+    <a ><input type="submit" value="Log In" (click)="iniciarSesion()"></a>
+    <!--    <a href="#">Lost your Password?</a><br>-->
+    <!--    <a href="#">Don't have An account?</a>-->
+  </div>
+</div>
+</body>
+</html>
